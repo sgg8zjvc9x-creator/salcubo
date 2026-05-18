@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S al Cubo (S³) | Sandra Quirós Palomo - Educación Física del Futuro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@800;900&family=Silkscreen&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #090d12;
+            color: #f0f6fc;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.1) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(59, 130, 246, 0.1) 0px, transparent 50%),
+                radial-gradient(#ffffff05 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, 30px 30px;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+        .apple-glass {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 28px;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .apple-glass:hover {
+            transform: translateY(-6px);
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+        .gradient-text {
+            background: linear-gradient(90deg, #38bdf8, #818cf8, #34d399);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .tag-badge {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+        }
+        
+        /* --- MODAL MULTIUSOS (VÍDEO / JUEGOS) --- */
+        #video-modal, #seño-modal, #game-engine {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 50;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(15px);
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .modal-content {
+            width: 100%;
+            max-width: 400px;
+            position: relative;
+            margin-top: auto;
+            margin-bottom: auto;
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+        .video-container {
+            position: relative;
+            padding-bottom: 177.77%; /* Proporción 9:16 vertical */
+            height: 0;
+            overflow: hidden;
+            border-radius: 24px;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.8);
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        .contact-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px;
+            border-radius: 16px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        .contact-btn:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateY(-2px);
+        }
+        
+        /* Margarita Giratoria */
+        .margarita-container {
+            position: relative;
+            width: 96px;
+            height: 96px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .margarita-icon {
+            font-size: 76px;
+            color: #ffffff;
+            filter: drop-shadow(0 0 15px rgba(255,255,255,0.3));
+            animation: rotate-margarita 25s linear infinite;
+        }
+        .margarita-center {
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            background: #FFD700;
+            border-radius: 50%;
+            box-shadow: 0 0 15px #FFD700;
+            z-index: 2;
+        }
+        @keyframes rotate-margarita {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* --- CONTENEDORES DE JUEGO --- */
+        .game-box {
+            background: #ffffff;
+            color: #1e293b;
+            max-width: 600px;
+            width: 100%;
+            padding: 32px;
+            border-radius: 32px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+            position: relative;
+            border: 1px solid rgba(255,255,255,0.1);
+            margin: auto;
+        }
+        .theme-mario {
+            font-family: 'Inter', sans-serif;
+        }
+        .view-step { display: none; }
+        .view-step.active { display: block; animation: smoothPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        @keyframes smoothPop { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        /* Mecánicas de Mario Avanzado */
+        .mario-grid-btn { background: #f1f5f9; border: 2px solid #cbd5e1; border-radius: 12px; padding: 12px; font-weight: bold; transition: all 0.2s; text-align: center; font-size: 1.1rem; }
+        .mario-grid-btn:hover { background: #e2e8f0; transform: scale(1.05); }
+        .pot-marmita { background: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 16px; padding: 16px; transition: all 0.3s; text-align: center; cursor: pointer; font-weight: 600; }
+        .pot-marmita:hover { border-color: #10b981; background: #f0fdf4; }
+        .cable-slot { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+        .lock-dial { background: #1e293b; color: white; border-radius: 10px; padding: 8px; text-align: center; font-size: 1.8rem; font-weight: bold; width: 45px; border: none; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between p-6 md:p-12 lg:p-16">
+    
+    <header class="max-w-4xl mx-auto text-center my-auto pt-8 pb-12">
+        <span class="tag-badge text-xs font-semibold uppercase tracking-widest px-4 py-2 rounded-full text-sky-400 inline-flex items-center gap-2 mb-6">
+            <span class="w-2 h-2 rounded-full bg-sky-400 animate-pulse"></span> Oposición Primaria | Educación Física
+        </span>
+        
+        <h1 class="text-5xl md:text-7xl lg:text-8xl font-black mb-6 tracking-tight leading-none">
+            <span class="gradient-text">S al Cubo</span><span class="text-sky-400 text-3xl md:text-4xl align-top">³</span>
+        </h1>
+        
+        <p class="text-xl md:text-2xl text-slate-300 font-light max-w-2xl mx-auto leading-relaxed mb-4">
+            La evolución digital de la Educación Física: <strong class="text-white font-medium">Metodologías activas</strong>, vanguardia tecnológica y gamificación adaptada al aula real.
+        </p>
+        
+        <p class="text-sm text-slate-500 max-w-xl mx-auto">
+            Diseñado bajo principios DUA para transformar el movimiento en aprendizaje significativo. Explora las tres dimensiones de mi propuesta.
+        </p>
+    </header>
+
+    <main class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 w-full mb-12">
+        
+        <section onclick="openSeño()" class="apple-glass p-8 flex flex-col items-center text-center justify-between min-h-[320px] cursor-pointer border-emerald-500/20 bg-emerald-500/[0.01] hover:border-emerald-500/40 group">
+            <div class="flex flex-col items-center">
+                <div class="w-16 h-16 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-emerald-400 text-3xl mb-6 shadow-inner">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+                <h2 class="text-2xl font-bold mb-3 text-white">La Seño</h2>
+                <p class="text-slate-400 text-sm leading-relaxed">
+                    Gamificación, situaciones de aprendizaje innovadoras y recursos interactivos listos para el aula del siglo XXI.
+                </p>
+            </div>
+            <span class="text-emerald-400 text-xs font-bold uppercase tracking-widest flex items-center mt-6 group-hover:text-white transition-colors">
+                Explorar Biblioteca <i class="fa-solid fa-folder-open ml-2"></i>
+            </span>
+        </section>
+
+        <section onclick="openVideo()" class="apple-glass p-8 flex flex-col items-center text-center justify-between min-h-[320px] cursor-pointer border-sky-500/20 bg-sky-500/[0.01] hover:border-sky-500/40 group">
+            <div class="flex flex-col items-center w-full">
+                <div class="margarita-container mb-6 transition-transform group-hover:scale-105">
+                    <div class="margarita-center"></div>
+                    <i class="fa-solid fa-asterisk margarita-icon"></i>
+                </div>
+                <h2 class="text-2xl font-bold mb-3 text-white">Sandra</h2>
+                <p class="text-slate-400 text-sm leading-relaxed">
+                    Conóceme en acción. Haz clic para activar mi videopresentación interactiva y acceder a mis canales de contacto directo.
+                </p>
+            </div>
+            <span class="text-sky-400 text-xs font-bold uppercase tracking-widest flex items-center mt-6 group-hover:text-white transition-colors">
+                Ver Presentación <i class="fa-solid fa-play ml-2"></i>
+            </span>
+        </section>
+
+        <section class="apple-glass p-8 flex flex-col items-center text-center justify-between min-h-[320px]">
+            <div class="flex flex-col items-center">
+                <div class="w-16 h-16 bg-purple-500/10 rounded-2xl flex items-center justify-center text-purple-400 text-3xl mb-6 shadow-inner">
+                    <i class="fa-solid fa-hand-fist"></i>
+                </div>
+                <h2 class="text-2xl font-bold mb-3 text-white">El Sensei</h2>
+                <p class="text-slate-400 text-sm leading-relaxed">
+                    La esencia del Kenpo aplicada a la educación: disciplina positiva, gestión emocional, respeto y control del movimiento.
+                </p>
+            </div>
+            <span class="text-purple-400 text-xs font-bold uppercase tracking-wider mt-6 inline-flex items-center opacity-60">
+                Próximamente <i class="fa-solid fa-lock ml-2 text-[10px]"></i>
+            </span>
+        </section>
+
+    </main>
+
+    <footer class="text-center text-slate-600 text-xs py-4 border-t border-white/5 w-full max-w-6xl mx-auto">
+        &copy; 2026 S al Cubo (S³) - Sandra Quirós Palomo. Conectando Cuerpo, Mente e Innovación Digital.
+    </footer>
+
+    <div id="video-modal">
+        <div class="modal-content">
+            <button onclick="closeVideo()" class="absolute top-2 -right-2 md:-right-8 text-white text-2xl opacity-70 hover:opacity-100 z-10">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="video-container">
+                <iframe id="yt-player" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+            <div class="mt-6 grid grid-cols-1 gap-3">
+                <a href="mailto:sanquipa03@gmail.com?subject=Contacto%20desde%20tu%20Web%20-%20S%20al%20Cubo&body=¡Hola%20Sandra!%20He%20visto%20tu%20vídeo%20de%20presentación%20y%20me%20gustaría%20conectar%20contigo..." class="contact-btn">
+                    <i class="fa-solid fa-envelope mr-3 text-emerald-400"></i> sanquipa03@gmail.com
+                </a>
+                <a href="https://instagram.com/sandriitakenpo" target="_blank" class="contact-btn">
+                    <i class="fa-brands fa-instagram mr-3 text-pink-500"></i> @sandriitakenpo
+                </a>
+                <a href="https://wa.me/34644758566" target="_blank" class="contact-btn">
+                    <i class="fa-brands fa-whatsapp mr-3 text-green-500"></i> WhatsApp Directo
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div id="seño-modal" class="fixed inset-0 z-50 bg-black/90 hidden items-center justify-center p-6 overflow-y-auto">
+        <div class="w-full max-w-4xl bg-[#0f172a] border border-white/10 rounded-3xl p-6 md:p-8 relative my-auto">
+            <button onclick="closeSeño()" class="absolute top-6 right-6 text-slate-400 hover:text-white text-xl"><i class="fa-solid fa-xmark"></i></button>
+            
+            <h2 class="text-3xl font-black text-white mb-2">Ludoteca <span class="text-emerald-400">Digital</span></h2>
+            <p class="text-slate-400 text-xs uppercase tracking-wider mb-8">Selecciona un ciclo para desplegar los desafíos activos</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-8">
+                <button onclick="filterCycle(1)" id="btn-tab-1" class="py-3 rounded-xl border border-white/5 font-bold text-sm transition-all text-white bg-white/5">1er Ciclo (1º/2º)</button>
+                <button onclick="filterCycle(2)" id="btn-tab-2" class="py-3 rounded-xl border border-white/5 font-bold text-sm transition-all text-white bg-white/5">2º Ciclo (3º/4º)</button>
+                <button onclick="filterCycle(3)" id="btn-tab-3" class="py-3 rounded-xl border border-white/5 font-bold text-sm transition-all text-white bg-white/5">3er Ciclo (5º/6º)</button>
+            </div>
+
+            <div id="games-container" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+        </div>
+    </div>
+
+    <div id="game-engine">
+        <div class="game-overlay w-full flex items-center justify-center">
+            <div id="game-box" class="game-box theme-mario">
+                <button onclick="closeGame()" class="absolute top-5 right-6 text-slate-400 hover:text-slate-700 z-50"><i class="fa-solid fa-xmark text-xl"></i></button>
+                <div id="dynamic-step-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const videoId = 'WgzakG_GYQ0';
+
+        /* Control de Modal de Vídeo */
+        function openVideo() {
+            const modal = document.getElementById('video-modal');
+            const iframe = document.getElementById('yt-player');
+            iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&rel=0&modestbranding=1&controls=1`;
+            modal.style.display = 'flex';
+        }
+        function closeVideo() {
+            const modal = document.getElementById('video-modal');
+            const iframe = document.getElementById('yt-player');
+            modal.style.display = 'none';
+            iframe.src = ''; 
+        }
+
+        /* Control de Ludoteca (La Seño) */
+        function openSeño() {
+            document.getElementById('seño-modal').style.display = 'flex';
+            filterCycle(2); // Carga por defecto el 2º ciclo donde está Mario
+        }
+        function closeSeño() {
+            document.getElementById('seño-modal').style.display = 'none';
+        }
+
+        const DB_GENERAL = {
+            1: [{ id: 'bluey', icon: 'fa-paw', color: 'text-sky-400', title: 'Bluey: El Recreo Mágico', desc: 'Recupera los balones robados superando pruebas físicas básicas junto a Bluey.' }],
+            2: [{ id: 'mario', icon: 'fa-gamepad', color: 'text-red-500', title: 'Super Mario: Desafío Experto', desc: '¡Reto inmersivo de 6 fases para 4º de Primaria! Libera el gimnasio saboteado por Bowser.' }],
+            3: [{ id: 'minecraft', icon: 'fa-cube', color: 'text-green-500', title: 'Minecraft: Survival Fitness', desc: 'Craftea y gestiona tus capacidades físicas básicas para derrotar al Ender Dragon.' }]
+        };
+
+        function filterCycle(num) {
+            [1, 2, 3].forEach(n => {
+                const btn = document.getElementById(`btn-tab-${n}`);
+                if (btn) {
+                    if (n === num) {
+                        btn.className = "py-3 rounded-xl font-bold text-sm transition-all border border-emerald-500 bg-emerald-500/10 text-emerald-400 text-center";
+                    } else {
+                        btn.className = "py-3 rounded-xl font-bold text-sm transition-all border border-white/5 bg-white/5 hover:bg-white/10 text-center text-white";
+                    }
+                }
+            });
+
+            const container = document.getElementById('games-container');
+            container.innerHTML = DB_GENERAL[num].map(game => `
+                <div class="bg-white/[0.02] border border-white/10 p-5 rounded-2xl flex flex-col justify-between text-left">
+                    <div>
+                        <div class="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center ${game.color} text-lg mb-3 border border-white/5"><i class="fa-solid ${game.icon}"></i></div>
+                        <h4 class="text-lg font-bold text-white mb-1 tracking-tight">${game.title}</h4>
+                        <p class="text-slate-400 text-xs leading-relaxed mb-4">${game.desc}</p>
+                    </div>
+                    <button onclick="launchGame('${game.id}')" class="w-full bg-emerald-500 hover:bg-emerald-600 py-3 rounded-xl font-bold text-white text-xs uppercase tracking-wider transition-all">
+                        ${game.id === 'mario' ? 'Iniciar Aventura Experta (6 Fases) 🚀' : 'Iniciar Breakout 🚀'}
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function launchGame(id) {
+            if(id !== 'mario') {
+                alert("Sandra, para la simulación ante el tribunal hemos desplegado al 100% la ingeniería del motor avanzado de SUPER MARIO (6 fases premium). ¡Dale caña a ese!");
+                return;
+            }
+            document.getElementById('seño-modal').style.display = 'none';
+            const engine = document.getElementById('game-engine');
+            engine.style.display = 'flex';
+            mario_loadStep(1);
+        }
+
+        function closeGame() { 
+            document.getElementById('game-engine').style.display = 'none'; 
+            document.getElementById('dynamic-step-container').innerHTML = ""; 
+        }
+
+        /* --- MOTOR DINÁMICO MARIO EXPERTO (6 FASES) --- */
+        let mario_current_sequence = [];
+        let mario_user_sequence = [];
+        const mario_arrows = ['⬆️', '⬇️', '⬅️', '➡️'];
+
+        function mario_loadStep(stepNum) {
+            const container = document.getElementById('dynamic-step-container');
+            
+            if(stepNum === 1) {
+                mario_current_sequence = Array.from({length: 4}, () => mario_arrows[Math.floor(Math.random()*4)]);
+                mario_user_sequence = [];
+                container.innerHTML = `
+                    <div class="view-step active text-center">
+                        <span class="text-xs font-bold text-red-500 uppercase tracking-widest block mb-1">Fase 1/6 — El Hechizo de Kamek</span>
+                        <h3 class="text-xl font-black mb-2 text-slate-800">Patrón Motriz Invertido</h3>
+                        <p class="text-slate-500 text-xs mb-4">Bowser aplicó el Modo Espejo. Memoriza la secuencia y **pulsa la dirección contraria** en pantalla.</p>
+                        <div class="bg-slate-900 text-white p-3 rounded-xl text-xl font-bold tracking-widest mb-4 flex justify-center gap-3">
+                            ${mario_current_sequence.map(a => `<span>${a}</span>`).join('')}
+                        </div>
+                        <div class="grid grid-cols-4 gap-2 max-w-xs mx-auto mb-4">
+                            <button onclick="mario_pressArrow('⬆️')" class="mario-grid-btn">⬆️</button>
+                            <button onclick="mario_pressArrow('⬇️')" class="mario-grid-btn">⬇️</button>
+                            <button onclick="mario_pressArrow('⬅️')" class="mario-grid-btn">⬅️</button>
+                            <button onclick="mario_pressArrow('➡️')" class="mario-grid-btn">➡️</button>
+                        </div>
+                        <div id="mario-mirror-feedback" class="text-xs font-semibold text-slate-400">Introduce tus respuestas...</div>
+                    </div>
+                `;
+            }
+            else if(stepNum === 2) {
+                container.innerHTML = `
+                    <div class="view-step active text-center">
+                        <span class="text-xs font-bold text-blue-600 uppercase tracking-widest block mb-1">Fase 2/6 — El Combustible de Yoshi</span>
+                        <h3 class="text-xl font-black mb-2 text-slate-800">Marmitas Metabólicas</h3>
+                        <p class="text-slate-500 text-xs mb-4">Yoshi corre en Mario Kart. Clasifica el alimento según el tipo de energía que aporta a la actividad física.</p>
+                        <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 mb-4">
+                            <span class="text-[10px] uppercase text-slate-400 font-bold block">Alimento en Cinta:</span>
+                            <span class="text-2xl font-black text-slate-800" id="yoshi-food">Plátano Maduro 🍌</span>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-2 text-xs font-bold text-slate-700">
+                            <div onclick="mario_checkYoshi(1)" class="pot-marmita">🔥<br>Energía Inmediata<br>(Glucosa)</div>
+                            <div onclick="mario_checkYoshi(2)" class="pot-marmita">📦<br>Energía Reserva<br>(H. Complejos)</div>
+                            <div onclick="mario_checkYoshi(3)" class="pot-marmita">☠️<br>Veno-Bowser<br>(Ultraprocesados)</div>
+                        </div>
+                    </div>
+                `;
+            }
+            else if(stepNum === 3) {
+                container.innerHTML = `
+                    <div class="view-step active text-center">
+                        <span class="text-xs font-bold text-emerald-600 uppercase tracking-widest block mb-1">Fase 3/6 — Diagnóstico Luigi</span>
+                        <h3 class="text-xl font-black mb-2 text-slate-800">El Escáner Anatómico</h3>
+                        <p class="text-slate-500 text-xs mb-4">Luigi se lesionó: *"Sufre una sobrecarga aguda en el músculo extensor principal de la rodilla (Antagonista de los Isquiotibiales)"*.</p>
+                        <div class="max-w-xs mx-auto bg-slate-50 rounded-xl p-3 border border-slate-200 text-xs space-y-2">
+                            <button onclick="alert('¡Incorrecto! Ese pertenece al tren superior.');" class="w-full py-2 bg-white border border-slate-200 rounded-lg">Bíceps Braquial</button>
+                            <button onclick="mario_loadStep(4)" class="w-full py-2 bg-emerald-100 border border-emerald-300 rounded-lg font-bold text-emerald-700 hover:bg-emerald-200">Cuádriceps Femoral 🎯</button>
+                            <button onclick="alert('¡Casi! Ese es el antagonista flexor posterior de la rodilla.');" class="w-full py-2 bg-white border border-slate-200 rounded-lg">Isquiotibiales</button>
+                            <button onclick="alert('¡Incorrecto! Pertenece a la parte posterior de la pantorrilla.');" class="w-full py-2 bg-white border border-slate-200 rounded-lg">Gemelos / Gastrocnemio</button>
+                        </div>
+                    </div>
+                `;
+            }
+            else if(stepNum === 4) {
+                container.innerHTML = `
+                    <div class="view-step active text-center">
+                        <span class="text-xs font-bold text-purple-600 uppercase tracking-widest block mb-1">Fase 4/6 — Dirección Técnica</span>
+                        <h3 class="text-xl font-black mb-2 text-slate-800">Pizarra Táctica Inclusiva (DUA)</h3>
+                        <p class="text-slate-500 text-xs mb-4">Los rivales monopolizan el balón en el patio e impiden jugar a Toad. ¿Qué adaptación reglamentaria aplicas?</p>
+                        <div class="grid grid-cols-1 gap-2 text-xs font-semibold text-left text-slate-700">
+                            <button onclick="alert('No es inclusivo, segrega y excluye en lugar de adaptar el contexto.');" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl hover:bg-slate-100">A) Expulsar del juego a los esbirros de Bowser que jueguen fuerte.</button>
+                            <button onclick="mario_loadStep(5)" class="w-full p-3 bg-purple-50 border border-purple-200 rounded-xl hover:bg-purple-100 text-purple-900 font-bold">B) Regla de Oro: Obligatorio que el balón pase por los 3 componentes del equipo antes de lanzar a portería/canasta. 🎯</button>
+                            <button onclick="alert('Incorrecto. Centrarse solo en el resultado numérico no favorece el diseño DUA.');" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl hover:bg-slate-100">C) Darle doble puntuación a Toad si mete gol para motivarle a correr solo.</button>
+                        </div>
+                    </div>
+                `;
+            }
+            else if(stepNum === 5) {
+                container.innerHTML = `
+                    <div class="view-step active text-center">
+                        <span class="text-xs font-bold text-amber-600 uppercase tracking-widest block mb-1">Fase 5/6 — Sabotaje Físico</span>
+                        <h3 class="text-xl font-black mb-2 text-slate-800">Panel de Capacidades Físicas</h3>
+                        <p class="text-slate-500 text-xs mb-4">Bowsy cortó los cables de habilidades. Empareja cada acción motriz con su Capacidad Física Básica correspondiente.</p>
+                        <div class="text-left text-xs space-y-2 mb-4">
+                            <div class="cable-slot"><span>🏃‍♂️ Mario esprinta a tope a por una estrella</span> <button onclick="mario_checkCable('v')" id="cb-v" class="bg-slate-200 px-3 py-1 rounded font-bold">Velocidad</button></div>
+                            <div class="cable-slot"><span>🏋️‍♂️ Mario levanta y lanza un bloque gigante de piedra</span> <button onclick="mario_checkCable('f')" id="cb-f" class="bg-slate-200 px-3 py-1 rounded font-bold">Fuerza</button></div>
+                            <div class="cable-slot"><span> swam; Mario nada niveles infinitos sin ahogarse</span> <button onclick="mario_checkCable('r')" id="cb-r" class="bg-slate-200 px-3 py-1 rounded font-bold">Resistencia</button></div>
+                        </div>
+                        <div id="mario-cable-feedback" class="text-xs font-bold text-slate-400 text-center">Conecta las 3 capacidades...</div>
+                    </div>
+                `;
+            }
+            else if(stepNum === 6) {
+                container.innerHTML = `
+                    <div class="view-step active text-center">
+                        <span class="text-xs font-bold text-slate-500 uppercase tracking-widest block mb-1">Fase Final 6/6 — El Candado del Castillo</span>
+                        <h3 class="text-xl font-black mb-2 text-slate-800">Desbloqueo de Combinación</h3>
+                        <p class="text-slate-500 text-xs mb-4">Alinea los rodillos giratorios con la clave alfanumérica secreta descubierta en la aventura.</p>
+                        <div class="flex justify-center gap-2 mb-6">
+                            <input type="text" maxlength="1" id="d1" class="lock-dial" value="M">
+                            <input type="text" maxlength="1" id="d2" class="lock-dial" value="A">
+                            <input type="text" maxlength="1" id="d3" class="lock-dial" value="R">
+                            <input type="text" maxlength="1" id="d4" class="lock-dial" value="1">
+                            <input type="text" maxlength="1" id="d5" class="lock-dial" value="0">
+                        </div>
+                        <button onclick="mario_validateLock()" class="w-full bg-slate-950 text-white py-3 rounded-xl font-bold uppercase text-xs tracking-wider">Comprobar Combinación 🔓</button>
+                    </div>
+                `;
+            }
+        }
+
+        function mario_pressArrow(arrow) {
+            const opposites = {'⬆️':'⬇️', '⬇️':'⬆️', '⬅️':'➡️', '➡️':'⬅️'};
+            const expectedOpposite = opposites[mario_current_sequence[mario_user_sequence.length]];
+            
+            if(arrow === expectedOpposite) {
+                mario_user_sequence.push(arrow);
+                document.getElementById('mario-mirror-feedback').innerText = `¡Bien! Pasos: ${mario_user_sequence.length} / 4`;
+                if(mario_user_sequence.length === 4) {
+                    alert("¡Excelente! Has anulado el Modo Espejo de Kamek. ¡Pasamos a las pociones de energía!");
+                    mario_loadStep(2);
+                }
+            } else {
+                alert("❌ ¡Fallo de coordinación! Te golpeó un caparazón de Bowser. La secuencia cambia.");
+                mario_loadStep(1);
+            }
+        }
+
+        let yoshiStage = 1;
+        function mario_checkYoshi(marmitaId) {
+            if(yoshiStage === 1 && marmitaId === 1) {
+                yoshiStage = 2;
+                document.getElementById('yoshi-food').innerText = "Pasta / Macarrones Integrales 🍝";
+                alert("¡Correcto! El plátano aporta glucosa rápida óptima para la carrera. Siguiente...");
+            } else if(yoshiStage === 2 && marmitaId === 2) {
+                alert("¡Bien pensado! Los hidratos complejos cargan los depósitos de glucógeno a largo plazo. Siguiente...");
+                document.getElementById('yoshi-food').innerText = "Bebida industrial ultraprocesada 🥤";
+                yoshiStage = 3;
+            } else if(yoshiStage === 3 && marmitaId === 3) {
+                alert("¡Perfecto! Has evitado los azúcares refinados perjudiciales para el rendimiento de Yoshi. ¡Avanzamos a anatomía!");
+                mario_loadStep(3);
+            } else {
+                alert("❌ ¡Error! Yoshi sufre una pájara o desajuste metabólico por mala elección de combustible. Reiniciando cinta.");
+                yoshiStage = 1;
+                document.getElementById('yoshi-food').innerText = "Plátano Maduro 🍌";
+            }
+        }
+
+        let cables_repaired = { f:false, v:false, r:false };
+        function mario_checkCable(cap) {
+            cables_repaired[cap] = true;
+            const btn = document.getElementById(`cb-${cap}`);
+            btn.className = "bg-emerald-500 text-white px-3 py-1 rounded font-bold";
+            btn.innerText = "¡Conectado! ⚡";
+            
+            if(cables_repaired.f && cables_repaired.v && cables_repaired.r) {
+                alert("¡Puente reparado! El sistema de Capacidades Físicas Básicas vuelve a estar operativo. ¡Al candado final!");
+                mario_loadStep(6);
+            }
+        }
+
+        function mario_validateLock() {
+            const code = [
+                document.getElementById('d1').value.toUpperCase(),
+                document.getElementById('d2').value.toUpperCase(),
+                document.getElementById('d3').value.toUpperCase(),
+                document.getElementById('d4').value,
+                document.getElementById('d5').value
+            ].join('');
+
+            if(code === "MAR10") {
+                const container = document.getElementById('dynamic-step-container');
+                container.innerHTML = `
+                    <div class="view-step active text-center py-4">
+                        <div class="text-5xl mb-3 animate-bounce">🏆</div>
+                        <h3 class="text-2xl font-black text-emerald-600 mb-1">¡Gimnasio Conquistado!</h3>
+                        <p class="text-slate-500 text-xs mb-4">Has resuelto la gamificación curricular de 4º de Primaria ante el tribunal.</p>
+                        <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-2xl mb-4">
+                            <span class="text-[10px] uppercase font-bold text-emerald-600 tracking-widest block mb-1">Código de Registro LOMLOE:</span>
+                            <span class="text-2xl font-black tracking-widest text-slate-900">MARIO_FIT_S3</span>
+                        </div>
+                        <button onclick="closeGame()" class="bg-slate-950 text-white px-6 py-2.5 rounded-xl font-bold uppercase text-xs tracking-wider">Finalizar Simulación</button>
+                    </div>
+                `;
+            } else {
+                alert("❌ Código erróneo. Comprueba los rodillos del candado del castillo.");
+            }
+        }
+
+        /* Cerrar modales con clic exterior */
+        window.onclick = function(event) {
+            const vModal = document.getElementById('video-modal');
+            const sModal = document.getElementById('seño-modal');
+            if (event.target == vModal) closeVideo();
+            if (event.target == sModal) closeSeño();
+        }
+    </script>
+</body>
+</html>
