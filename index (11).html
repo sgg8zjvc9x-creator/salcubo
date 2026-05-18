@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S al Cubo (S³) | Sandra - Educación Física del Futuro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #090d12;
+            color: #f0f6fc;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.1) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(59, 130, 246, 0.1) 0px, transparent 50%),
+                radial-gradient(#ffffff05 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, 30px 30px;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+        .apple-glass {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 28px;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .apple-glass:hover {
+            transform: translateY(-6px);
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+        .gradient-text {
+            background: linear-gradient(90deg, #38bdf8, #818cf8, #34d399);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .tag-badge {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+        }
+        
+        /* Modales con Scroll */
+        .custom-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 50;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(15px);
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .modal-content {
+            width: 100%;
+            max-width: 480px;
+            position: relative;
+            margin-top: auto;
+            margin-bottom: auto;
+            padding: 28px;
+            background: rgba(18, 24, 38, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 32px;
+            box-shadow: 0 30px 70px rgba(0,0,0,0.8);
+        }
+        .video-container {
+            position: relative;
+            padding-bottom: 177.77%;
+            height: 0;
+            overflow: hidden;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+        .video-container iframe {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+        }
+        .contact-btn {
+            display: flex; align-items: center; justify-content: center;
+            padding: 14px; border-radius: 16px; background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1); color: white; transition: all 0.2s ease;
+        }
+        .contact-btn:hover { background: rgba(255,255,255,0.1); transform: translateY(-2px); }
+
+        /* Tarjetas de Ciclo y Juegos */
+        .ciclo-tab {
+            cursor: pointer; padding: 10px 20px; border-radius: 12px;
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+            transition: all 0.2s ease; font-weight: 600; font-size: 14px;
+        }
+        .ciclo-tab.active {
+            background: #10b981; color: white; border-color: #10b981;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+        }
+        .game-card {
+            background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 20px; padding: 20px; text-align: left; transition: all 0.3s ease;
+        }
+        .game-card:hover {
+            border-color: #10b981; background: rgba(16, 185, 129, 0.03);
+        }
+        .breakout-step { display: none; }
+        .breakout-step.active { display: block; }
+        .option-card {
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px; padding: 14px; cursor: pointer; transition: all 0.2s;
+        }
+        .option-card:hover { background: rgba(255,255,255,0.08); }
+        .option-card.selected { background: rgba(56, 189, 248, 0.15); border-color: #38bdf8; }
+
+        /* Margarita Giratoria */
+        .margarita-container {
+            position: relative; width: 96px; height: 96px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .margarita-icon {
+            font-size: 76px; color: #ffffff;
+            filter: drop-shadow(0 0 15px rgba(255,255,255,0.3));
+            animation: rotate-margarita 25s linear infinite;
+        }
+        .margarita-center {
+            position: absolute; width: 18px; height: 18px;
+            background: #FFD700; border-radius: 50%;
+            box-shadow: 0 0 15px #FFD700; z-index: 2;
+        }
+        @keyframes rotate-margarita {
+            from { transform: rotate(0deg); } to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between p-6 md:p-12 lg:p-16">
+    
+    <!-- HERO PRINCIPAL -->
+    <header class="max-w-4xl mx-auto text-center my-auto pt-8 pb-12">
+        <span class="tag-badge text-xs font-semibold uppercase tracking-widest px-4 py-2 rounded-full text-sky-400 inline-flex items-center gap-2 mb-6">
+            <span class="w-2 h-2 rounded-full bg-sky-400 animate-pulse"></span> Oposición Primaria | Educación Física
+        </span>
+        <h1 class="text-5xl md:text-7xl lg:text-8xl font-black mb-6 tracking-tight leading-none">
+            <span class="gradient-text">S al Cubo</span><span class="text-sky-400 text-3xl md:text-4xl align-top">³</span>
+        </h1>
+        <p class="text-xl md:text-2xl text-slate-300 font-light max-w-2xl mx-auto leading-relaxed mb-4">
+            La evolución digital de la Educación Física: <strong class="text-white font-medium">Metodologías activas</strong>, vanguardia tecnológica y gamificación adaptada al aula real.
+        </p>
+        <p class="text-sm text-slate-500 max-w-xl mx-auto">
+            Diseñado bajo principios DUA para transformar el movimiento en aprendizaje significativo. Explora las tres dimensiones de mi propuesta.
+        </p>
+    </header>
+
+    <!-- GRID DE WIDGETS PRINCIPALES -->
+    <main class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 w-full mb-12">
+        
+        <!-- SECCIÓN SEÑO (CATÁLOGO DE BREAKOUTS) -->
+        <section onclick="openCatalog()" class="apple-glass p-8 flex flex-col items-center text-center justify-between min-h-[320px] cursor-pointer border-emerald-500/20 bg-emerald-500/[0.01] hover:border-emerald-500/40 group">
+            <div class="flex flex-col items-center">
+                <div class="w-16 h-16 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-emerald-400 text-3xl mb-6 shadow-inner group-hover:scale-105 transition-transform">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+                <h2 class="text-2xl font-bold mb-3 text-white">La Seño</h2>
+                <p class="text-slate-400 text-sm leading-relaxed">
+                    <strong>Gamificación Práctica (DUA):</strong> Banco interactivo con 6 Breakouts Digitales adaptados por ciclos. Temáticas de Minecraft, Bluey, Inside Out y más.
+                </p>
+            </div>
+            <span class="text-emerald-400 text-xs font-bold uppercase tracking-wider mt-6 inline-flex items-center group-hover:text-white transition-colors">
+                Ver 6 Breakouts <i class="fa-solid fa-cubes ml-2 animate-pulse"></i>
+            </span>
+        </section>
+
+        <!-- SECCIÓN SANDRA (VIDEOPRESENTACIÓN) -->
+        <section onclick="openVideo()" class="apple-glass p-8 flex flex-col items-center text-center justify-between min-h-[320px] cursor-pointer border-sky-500/20 bg-sky-500/[0.01] hover:border-sky-500/40 group">
+            <div class="flex flex-col items-center w-full">
+                <div class="margarita-container mb-6 transition-transform group-hover:scale-105">
+                    <div class="margarita-center"></div>
+                    <i class="fa-solid fa-asterisk margarita-icon"></i>
+                </div>
+                <h2 class="text-2xl font-bold mb-3 text-white">Sandra</h2>
+                <p class="text-slate-400 text-sm leading-relaxed">
+                    Conóceme en acción. Haz clic para activar mi videopresentación interactiva y acceder a mis canales de contacto directo.
+                </p>
+            </div>
+            <span class="text-sky-400 text-xs font-bold uppercase tracking-widest flex items-center mt-6 group-hover:text-white transition-colors">
+                Ver Presentación <i class="fa-solid fa-play ml-2"></i>
+            </span>
+        </section>
+
+        <!-- SECCIÓN SENSEI -->
+        <section class="apple-glass p-8 flex flex-col items-center text-center justify-between min-h-[320px]">
+            <div class="flex flex-col items-center">
+                <div class="w-16 h-16 bg-purple-500/10 rounded-2xl flex items-center justify-center text-purple-400 text-3xl mb-6 shadow-inner">
+                    <i class="fa-solid fa-hand-fist"></i>
+                </div>
+                <h2 class="text-2xl font-bold mb-3 text-white">El Sensei</h2>
+                <p class="text-slate-400 text-sm leading-relaxed">
+                    La esencia del Kenpo aplicada a la educación: disciplina positiva, gestión emocional, respeto y control del movimiento.
+                </p>
+            </div>
+            <span class="text-purple-400 text-xs font-bold uppercase tracking-wider mt-6 inline-flex items-center opacity-60">
+                Próximamente <i class="fa-solid fa-lock ml-2 text-[10px]"></i>
+            </span>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="text-center text-slate-600 text-xs py-4 border-t border-white/5 w-full max-w-6xl mx-auto">
+        &copy; 2026 S al Cubo (S³) - Sandra Quiles. Conectando Cuerpo, Mente e Innovación Digital.
+    </footer>
+
+    <!-- MODAL DE VÍDEO (SANDRA) -->
+    <div id="video-modal" class="custom-modal">
+        <div class="modal-content !p-0 !bg-transparent !border-0">
+            <button onclick="closeVideo()" class="absolute -top-10 right-0 text-white text-2xl opacity-70 hover:opacity-100 z-10">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="video-container">
+                <iframe id="yt-player" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DEL CATÁLOGO DE BREAKOUTS (LA SEÑO) -->
+    <div id="catalog-modal" class="custom-modal">
+        <div class="modal-content max-w-2xl text-center">
+            <button onclick="closeCatalog()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-xl">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <h3 class="text-3xl font-black mb-2 text-white">🗂️ Ludoteca Gamificada DUA</h3>
+            <p class="text-slate-400 text-sm mb-6">Selecciona un ciclo de Educación Primaria para desplegar los Breakouts interactivos.</p>
+            
+            <!-- Selectores de Ciclos -->
+            <div class="flex justify-center gap-3 mb-8">
+                <button id="btn-c1" onclick="switchCiclo(1)" class="ciclo-tab active">1º Ciclo (1º-2º)</button>
+                <button id="btn-c2" onclick="switchCiclo(2)" class="ciclo-tab">2º Ciclo (3º-4º)</button>
+                <button id="btn-c3" onclick="switchCiclo(3)" class="ciclo-tab">3º Ciclo (5º-6º)</button>
+            </div>
+
+            <!-- CONTENEDORES DE JUEGOS -->
+            <!-- JUEGOS 1º CICLO -->
+            <div id="ciclo-1-games" class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
+                <div class="game-card flex flex-col justify-between">
+                    <div>
+                        <span class="text-xs font-bold px-2 py-1 rounded bg-amber-500/10 text-amber-400">Temática: Bluey</span>
+                        <h4 class="text-lg font-bold text-white mt-2 mb-1">🐾 Misión: Salvar el Recreo</h4>
+                        <p class="text-xs text-slate-400 leading-relaxed">Esquema corporal y hábitos saludables. Ideal para introducir las normas básicas del gimnasio.</p>
+                    </div>
+                    <button onclick="startGame('bluey')" class="mt-4 w-full bg-emerald-500 py-2 rounded-xl text-xs font-bold text-center">Lanzar Aventura 🏃‍♂️</button>
+                </div>
+                <div class="game-card flex flex-col justify-between">
+                    <div>
+                        <span class="text-xs font-bold px-2 py-1 rounded bg-blue-500/10 text-blue-400">Temática: Super Mario</span>
+                        <h4 class="text-lg font-bold text-white mt-2 mb-1">🍄 El Rescate del Champiñón</h4>
+                        <p class="text-xs text-slate-400 leading-relaxed">Habilidades motrices básicas (desplazamientos y giros). ¡Consigue las estrellas de oro!</p>
+                    </div>
+                    <button onclick="startGame('mario')" class="mt-4 w-full bg-emerald-500 py-2 rounded-xl text-xs font-bold text-center">Lanzar Aventura 🎮</button>
+                </div>
+            </div>
+
+            <!-- JUEGOS 2º CICLO -->
+            <div id="ciclo-2-games" class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left hidden">
+                <div class="game-card flex flex-col justify-between">
+                    <div>
+                        <span class="text-xs font-bold px-2 py-1 rounded bg-purple-500/10 text-purple-400">Temática: Inside Out</span>
+                        <h4 class="text-lg font-bold text-white mt-2 mb-1">🧠 El Laberinto Emocional</h4>
+                        <p class="text-xs text-slate-400 leading-relaxed">Expresión corporal, ritmo y gestión emocional en situaciones de juego colectivo.</p>
+                    </div>
+                    <button onclick="startGame('insideout')" class="mt-4 w-full bg-emerald-500 py-2 rounded-xl text-xs font-bold text-center">Lanzar Aventura 🎭</button>
+                </div>
+                <div class="game-card flex flex-col justify-between">
+                    <div>
+                        <span class="text-xs font-bold px-2 py-1 rounded bg-red-500/10 text-red-400">Temática: Pokémon Go</span>
+                        <h4 class="text-lg font-bold text-white mt-2 mb-1">🎒 El Safari de la Orientación</h4>
+                        <p class="text-xs text-slate-400 leading-relaxed">Iniciación a los juegos de orientación en el centro, espacialidad y descifrado de mapas.</p>
+                    </div>
+                    <button onclick="startGame('pokemon')" class="mt-4 w-full bg-emerald-500 py-2 rounded-xl text-xs font-bold text-center">Lanzar Aventura 🧭</button>
+                </div>
+            </div>
+
+            <!-- JUEGOS 3º CICLO -->
+            <div id="ciclo-3-games" class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left hidden">
+                <div class="game-card flex flex-col justify-between">
+                    <div>
+                        <span class="text-xs font-bold px-2 py-1 rounded bg-green-500/10 text-green-400">Temática: Minecraft</span>
+                        <h4 class="text-lg font-bold text-white mt-2 mb-1">⛏️ Craftea tu Condición Física</h4>
+                        <p class="text-xs text-slate-400 leading-relaxed">Capacidades físicas básicas (fuerza, resistencia, velocidad). Bloques de entrenamiento metabólico.</p>
+                    </div>
+                    <button onclick="startGame('minecraft')" class="mt-4 w-full bg-emerald-500 py-2 rounded-xl text-xs font-bold text-center">Lanzar Aventura ⚔️</button>
+                </div>
+                <div class="game-card flex flex-col justify-between">
+                    <div>
+                        <span class="text-xs font-bold px-2 py-1 rounded bg-sky-500/10 text-sky-400">Temática: JJOO / Kings League</span>
+                        <h4 class="text-lg font-bold text-white mt-2 mb-1">🏆 Olimpo Digital: Fair Play</h4>
+                        <p class="text-xs text-slate-400 leading-relaxed">Juegos modificados, deportes alternativos, juego limpio y coeducación inclusiva.</p>
+                    </div>
+                    <button onclick="startGame('kings')" class="mt-4 w-full bg-emerald-500 py-2 rounded-xl text-xs font-bold text-center">Lanzar Aventura ⚽</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- MODAL DINÁMICO DE JUEGO (MOTOR DEL BREAKOUT) -->
+    <div id="game-engine-modal" class="custom-modal">
+        <div class="modal-content text-left">
+            <button onclick="closeEngine()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-xl">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div id="engine-body">
+                <!-- El contenido se inyecta dinámicamente mediante JS -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const videoId = 'WgzakG_GYQ0';
+        let currentSelectionCorrect = false;
+
+        function openVideo() {
+            const modal = document.getElementById('video-modal');
+            const iframe = document.getElementById('yt-player');
+            iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&rel=0&modestbranding=1&controls=1`;
+            modal.style.display = 'flex';
+        }
+        function closeVideo() {
+            document.getElementById('video-modal').style.display = 'none';
+            document.getElementById('yt-player').src = '';
+        }
+
+        function openCatalog() { document.getElementById('catalog-modal').style.display = 'flex'; }
+        function closeCatalog() { document.getElementById('catalog-modal').style.display = 'none'; }
+        function closeEngine() { document.getElementById('game-engine-modal').style.display = 'none'; openCatalog(); }
+
+        function switchCiclo(num) {
+            document.querySelectorAll('.ciclo-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(`btn-c${num}`).classList.add('active');
+            
+            document.getElementById('ciclo-1-games').classList.add('hidden');
+            document.getElementById('ciclo-2-games').classList.add('hidden');
+            document.getElementById('ciclo-3-games').classList.add('hidden');
+            document.getElementById(`ciclo-${num}-games`).classList.remove('hidden');
+        }
+
+        // BASE DE DATOS E INYECTOR DE RETOS (GAMIFICACIÓN TOTAL)
+        function startGame(gameKey) {
+            document.getElementById('catalog-modal').style.display = 'none';
+            document.getElementById('game-engine-modal').style.display = 'flex';
+            const body = document.getElementById('engine-body');
+            currentSelectionCorrect = false;
+
+            if(gameKey === 'bluey') {
+                body.innerHTML = `
+                    <span class="text-xs font-bold text-amber-400 uppercase">1º Ciclo • Temática Bluey</span>
+                    <h3 class="text-2xl font-black text-white mt-1 mb-3">🐾 Misión: Salvar el Recreo</h3>
+                    <p class="text-sm text-slate-300 mb-6">El villano Aburrimiento ha encerrado los balones. ¡Ayuda a Bluey y Bingo a recuperarlos!</p>
+                    <h4 class="font-bold text-white mb-3">¿Con qué parte del cuerpo golpeas una pelota en fútbol?</h4>
+                    <div class="flex flex-col gap-2 mb-6">
+                        <div onclick="selectOpt(this, false)" class="option-card">🖐️ Con las manos</div>
+                        <div onclick="selectOpt(this, true)" class="option-card">👟 Con el pie</div>
+                    </div>
+                    <button onclick="evalGame('¡Excelente! Clave: EF_BLUEY')" class="w-full bg-emerald-500 py-3 rounded-xl font-bold text-white">Comprobar</button>
+                `;
+            } else if(gameKey === 'mario') {
+                body.innerHTML = `
+                    <span class="text-xs font-bold text-red-400 uppercase">1º Ciclo • Temática Super Mario</span>
+                    <h3 class="text-2xl font-black text-white mt-1 mb-3">🍄 El Rescate del Champiñón</h3>
+                    <p class="text-sm text-slate-300 mb-6">Bowser ha bloqueado el gimnasio con un muro de ladrillos moleculares.</p>
+                    <h4 class="font-bold text-white mb-3">Para esquivar un caparazón que viene por arriba, ¿qué habilidad motriz debes usar?</h4>
+                    <div class="flex flex-col gap-2 mb-6">
+                        <div onclick="selectOpt(this, true)" class="option-card">🧘‍♂️ Agacharse / Flexionar el tronco</div>
+                        <div onclick="selectOpt(this, false)" class="option-card">🚀 Saltar hacia arriba</div>
+                    </div>
+                    <button onclick="evalGame('¡Salvaste a Toad! Clave: MARIO_MOTRIZ')" class="w-full bg-emerald-500 py-3 rounded-xl font-bold text-white">Comprobar</button>
+                `;
+            } else if(gameKey === 'insideout') {
+                body.innerHTML = `
+                    <span class="text-xs font-bold text-purple-400 uppercase">2º Ciclo • Temática Inside Out</span>
+                    <h3 class="text-2xl font-black text-white mt-1 mb-3">🧠 El Laberinto Emocional</h3>
+                    <p class="text-sm text-slate-300 mb-6">Alegría y Tristeza se han perdido en la zona de almacenamiento de recuerdos motrices.</p>
+                    <h4 class="font-bold text-white mb-3">Si pierdes un partido y te enfadas mucho con un compañero, ¿qué debes hacer?</h4>
+                    <div class="flex flex-col gap-2 mb-6">
+                        <div onclick="selectOpt(this, false)" class="option-card">🤬 Gritarle y tirar el material al suelo</div>
+                        <div onclick="selectOpt(this, true)" class="option-card">😮 Respira hondo, dialoga y aplica el Fair Play</div>
+                    </div>
+                    <button onclick="evalGame('¡Control emocional superado! Clave: INSIDE_EF')" class="w-full bg-emerald-500 py-3 rounded-xl font-bold text-white">Comprobar</button>
+                `;
+            } else if(gameKey === 'pokemon') {
+                body.innerHTML = `
+                    <span class="text-xs font-bold text-yellow-400 uppercase">2º Ciclo • Temática Pokémon GO</span>
+                    <h3 class="text-2xl font-black text-white mt-1 mb-3">🧭 El Safari de la Orientación</h3>
+                    <p class="text-sm text-slate-300 mb-6">Hay un Pokémon Legendario oculto en el mapa del patio de recreo.</p>
+                    <h4 class="font-bold text-white mb-3">¿Qué elemento de un mapa te indica dónde está el Norte absoluto?</h4>
+                    <div class="flex flex-col gap-2 mb-6">
+                        <div onclick="selectOpt(this, true)" class="option-card">🧭 La Rosa de los Vientos / Brújula</div>
+                        <div onclick="selectOpt(this, false)" class="option-card">📏 Una regla milimetrada</div>
+                    </div>
+                    <button onclick="evalGame('¡Pokémon capturado! Clave: POKE_ORIENTA')" class="w-full bg-emerald-500 py-3 rounded-xl font-bold text-white">Comprobar</button>
+                `;
+            } else if(gameKey === 'minecraft') {
+                body.innerHTML = `
+                    <span class="text-xs font-bold text-green-400 uppercase">3º Ciclo • Temática Minecraft</span>
+                    <h3 class="text-2xl font-black text-white mt-1 mb-3">⛏️ Craftea tu Condición Física</h3>
+                    <p class="text-sm text-slate-300 mb-6">Para derrotar al Ender Dragon necesitas craftear una poción de Resistencia Anaeróbica.</p>
+                    <h4 class="font-bold text-white mb-3">¿Qué capacidad física te permite aguantar corriendo a alta velocidad durante mucho tiempo?</h4>
+                    <div class="flex flex-col gap-2 mb-6">
+                        <div onclick="selectOpt(this, false)" class="option-card">💪 Fuerza Máxima</div>
+                        <div onclick="selectOpt(this, true)" class="option-card">🫁 Resistencia Cardiovascular</div>
+                    </div>
+                    <button onclick="evalGame('¡Poción crafteada! Clave: MINECRAFT_S3')" class="w-full bg-emerald-500 py-3 rounded-xl font-bold text-white">Comprobar</button>
+                `;
+            } else if(gameKey === 'kings') {
+                body.innerHTML = `
+                    <span class="text-xs font-bold text-sky-400 uppercase">3º Ciclo • Temática Kings League</span>
+                    <h3 class="text-2xl font-black text-white mt-1 mb-3">⚽ Olimpo Digital: Fair Play</h3>
+                    <p class="text-sm text-slate-300 mb-6">Es la final del torneo intercentros y te toca activar la Carta Secreta del Deporte Inclusivo.</p>
+                    <h4 class="font-bold text-white mb-3">¿Cuál es el principal objetivo de adaptar las reglas en un juego modificado de Educación Física?</h4>
+                    <div class="flex flex-col gap-2 mb-6">
+                        <div onclick="selectOpt(this, true)" class="option-card">🤝 Que todo el alumnado participe por igual sin exclusión</div>
+                        <div onclick="selectOpt(this, false)" class="option-card">🏆 Que solo ganen los que tienen mejores habilidades</div>
+                    </div>
+                    <button onclick="evalGame('¡Campeones del Juego Limpio! Clave: KINGS_DUA')" class="w-full bg-emerald-500 py-3 rounded-xl font-bold text-white">Comprobar</button>
+                `;
+            }
+        }
+
+        function selectOpt(element, isCorrect) {
+            document.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
+            element.classList.add('selected');
+            currentSelectionCorrect = isCorrect;
+        }
+
+        function evalGame(successMsg) {
+            if(currentSelectionCorrect) {
+                alert(`🎉 ¡VICTORIA! 
+
+${successMsg}
+
+Nota DUA/LOMLOE: Reto superado con vinculación directa al currículo de Educación Física.`);
+                closeEngine();
+            } else {
+                alert('❌ Respuesta incorrecta. ¡Analiza los conceptos motrices y vuelve a intentarlo!');
+            }
+        }
+
+        window.onclick = function(event) {
+            if (event.target.classList.contains('custom-modal')) {
+                closeVideo(); closeCatalog(); closeEngine();
+            }
+        }
+    </script>
+</body>
+</html>
