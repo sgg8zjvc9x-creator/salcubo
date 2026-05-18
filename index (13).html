@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S al Cubo (S³) | Sandra - Educación Física del Futuro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #090d12;
+            color: #f0f6fc;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.1) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(59, 130, 246, 0.1) 0px, transparent 50%),
+                radial-gradient(#ffffff05 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, 30px 30px;
+            margin: 0; padding: 0; overflow-x: hidden;
+        }
+        .apple-glass {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 28px;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .apple-glass:hover {
+            transform: translateY(-4px);
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.12);
+        }
+        .gradient-text {
+            background: linear-gradient(90deg, #38bdf8, #818cf8, #34d399);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .tag-badge {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .custom-modal {
+            display: none; position: fixed; inset: 0; z-index: 50;
+            background: rgba(4, 6, 10, 0.95); backdrop-filter: blur(20px);
+            align-items: center; justify-content: center; padding: 16px; overflow-y: auto;
+        }
+        .modal-content {
+            width: 100%; max-w: 580px; background: #0f141c;
+            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 28px;
+            padding: 28px; box-shadow: 0 25px 60px rgba(0,0,0,0.6);
+        }
+        .video-container {
+            position: relative; padding-bottom: 177.77%; height: 0; overflow: hidden;
+            border-radius: 20px; border: 1px solid rgba(255,255,255,0.1);
+        }
+        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+        
+        /* Pestañas táctiles de ciclos */
+        .tab-btn {
+            padding: 12px 24px; border-radius: 14px; background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.06); color: #94a3b8; font-weight: 600;
+            transition: all 0.2s ease;
+        }
+        .tab-btn.active {
+            background: linear-gradient(135deg, #10b981, #059669); color: white;
+            border-color: #10b981; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+        
+        /* Tarjetas de juego interactivo */
+        .game-card-v2 {
+            background: linear-gradient(145deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+            border: 1px solid rgba(255,255,255,0.06); border-radius: 22px; padding: 24px;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .game-card-v2:hover {
+            border-color: #10b981; transform: scale(1.02);
+            background: linear-gradient(145deg, rgba(16,185,129,0.04), rgba(255,255,255,0.01));
+        }
+
+        /* Estructura interna de los pasos del juego */
+        .engine-step { display: none; }
+        .engine-step.active { display: block; }
+        
+        .opt-box {
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px; padding: 16px; cursor: pointer; transition: all 0.2s;
+        }
+        .opt-box:hover { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.15); }
+        .opt-box.selected { background: rgba(16, 185, 129, 0.15); border-color: #10b981; }
+
+        /* Animación de la margarita */
+        .margarita-container { position: relative; width: 84px; height: 84px; display: flex; align-items: center; justify-content: center; }
+        .margarita-icon { font-size: 68px; color: #ffffff; animation: rot-marg 30s linear infinite; }
+        .margarita-center { position: absolute; width: 16px; height: 16px; background: #FFD700; border-radius: 50%; box-shadow: 0 0 12px #FFD700; z-index: 2; }
+        @keyframes rot-marg { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between p-4 md:p-10 lg:p-12">
+
+    <!-- HERO PRINCIPAL -->
+    <header class="max-w-4xl mx-auto text-center my-6">
+        <span class="tag-badge text-xs font-semibold uppercase tracking-widest px-4 py-2 rounded-full text-emerald-400 inline-flex items-center gap-2 mb-4">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Innovación Curricular LOMLOE
+        </span>
+        <h1 class="text-5xl md:text-7xl font-black mb-4 tracking-tight">
+            <span class="gradient-text">S al Cubo</span><span class="text-sky-400 text-2xl md:text-3xl align-top">³</span>
+        </h1>
+        <p class="text-lg md:text-xl text-slate-300 font-light max-w-2xl mx-auto mb-2">
+            Metodologías activas, digitalización inclusiva y gamificación aplicadas a la Educación Física.
+        </p>
+    </header>
+
+    <!-- ZONA CENTRAL COMPARTIDA (LA SEÑO & SANDRA) -->
+    <main class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8 w-full items-start my-auto">
+        
+        <!-- COLUMNA IZQUIERDA: PRESENTACIÓN SANDRA -->
+        <div class="lg:col-span-1 flex flex-col gap-6">
+            <div onclick="openVideo()" class="apple-glass p-6 text-center cursor-pointer border-sky-500/20 bg-sky-500/[0.01] hover:border-sky-500/40 flex flex-col items-center justify-center min-h-[260px] group">
+                <div class="margarita-container mb-4 group-hover:scale-105 transition-transform">
+                    <div class="margarita-center"></div>
+                    <i class="fa-solid fa-asterisk margarita-icon"></i>
+                </div>
+                <h2 class="text-xl font-bold text-white mb-2">Dimensión: Sandra</h2>
+                <p class="text-slate-400 text-xs px-2">Videopresentación personal y contacto directo para el tribunal.</p>
+                <span class="text-sky-400 text-xs font-bold uppercase mt-4 flex items-center group-hover:text-white">Ver Vídeo <i class="fa-solid fa-play ml-2"></i></span>
+            </div>
+
+            <!-- BOTONES DE CONTACTO DIRECTO -->
+            <div class="grid grid-cols-2 gap-3">
+                <a href="mailto:sanquipa03@gmail.com?subject=Contacto%20S3" class="p-3 rounded-xl bg-white/5 border border-white/10 text-center text-xs font-medium hover:bg-white/10 flex items-center justify-center gap-2"><i class="fa-solid fa-envelope text-sky-400"></i> Email</a>
+                <a href="https://wa.me/34644758566" target="_blank" class="p-3 rounded-xl bg-white/5 border border-white/10 text-center text-xs font-medium hover:bg-white/10 flex items-center justify-center gap-2"><i class="fa-brands fa-whatsapp text-green-400"></i> WhatsApp</a>
+            </div>
+        </div>
+
+        <!-- COLUMNA DERECHA: SEÑO + PANEL COMPLETO DE LOS 6 BREAKOUTS -->
+        <div class="lg:col-span-2 apple-glass p-6 md:p-8 border-emerald-500/10">
+            <div class="flex items-center gap-4 mb-6">
+                <div class="w-12 h-12 bg-emerald-500/10 rounded-xl flex items-center justify-center text-emerald-400 text-xl shadow-inner">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+                <div class="text-left">
+                    <h2 class="text-2xl font-black text-white">Dimensión: La Seño</h2>
+                    <p class="text-slate-400 text-xs">Banco de Gamificación interactivo desarrollado bajo pautas DUA.</p>
+                </div>
+            </div>
+
+            <!-- SELECTOR DE CICLOS INTERACTIVO -->
+            <div class="flex gap-2 border-b border-white/10 pb-4 mb-6">
+                <button id="tab-1" onclick="selectCicloTab(1)" class="tab-btn active text-xs md:text-sm">1º Ciclo (1º-2º)</button>
+                <button id="tab-2" onclick="selectCicloTab(2)" class="tab-btn text-xs md:text-sm">2º Ciclo (3º-4º)</button>
+                <button id="tab-3" onclick="selectCicloTab(3)" class="tab-btn text-xs md:text-sm">3º Ciclo (5º-6º)</button>
+            </div>
+
+            <!-- RECEPTÁCULO NATIVO DE LOS JUEGOS (LOS 6 ESTÁN CARGADOS AQUÍ) -->
+            <!-- JUEGOS PRIMER CICLO -->
+            <div id="panel-ciclo-1" class="ciclo-panel grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="game-card-v2 flex flex-col justify-between text-left">
+                    <div>
+                        <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 tracking-wider">Temática: Bluey</span>
+                        <h3 class="text-lg font-bold text-white mt-2 mb-1">🐾 Misión: Salvar el Recreo</h3>
+                        <p class="text-xs text-slate-400 leading-normal">El villano Aburrimiento ha cerrado con llave el almacén de material. Descubre las partes del cuerpo y las normas del gimnasio para recuperarlo.</p>
+                    </div>
+                    <button onclick="initGame('bluey')" class="mt-4 w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 rounded-xl text-xs transition-colors">Iniciar Breakout 🏃‍♂️</button>
+                </div>
+                <div class="game-card-v2 flex flex-col justify-between text-left">
+                    <div>
+                        <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 tracking-wider">Temática: Super Mario</span>
+                        <h3 class="text-lg font-bold text-white mt-2 mb-1">🍄 El Rescate del Champiñón</h3>
+                        <p class="text-xs text-slate-400 leading-normal">Bowser ha bloqueado el patio con muros invisibles. Utiliza tus habilidades motrices básicas de desplazamiento y salto para esquivar las trampas.</p>
+                    </div>
+                    <button onclick="initGame('mario')" class="mt-4 w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 rounded-xl text-xs transition-colors">Iniciar Breakout 🎮</button>
+                </div>
+            </div>
+
+            <!-- JUEGOS SEGUNDO CICLO -->
+            <div id="panel-ciclo-2" class="ciclo-panel grid grid-cols-1 sm:grid-cols-2 gap-4 hidden">
+                <div class="game-card-v2 flex flex-col justify-between text-left">
+                    <div>
+                        <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-purple-500/10 text-purple-400 tracking-wider">Temática: Inside Out</span>
+                        <h3 class="text-lg font-bold text-white mt-2 mb-1">🧠 El Laberinto Emocional</h3>
+                        <p class="text-xs text-slate-400 leading-normal">Alegría y Tristeza necesitan ordenar los recuerdos motrices. Identifica conductas de Fair Play, expresión corporal y control emocional.</p>
+                    </div>
+                    <button onclick="initGame('insideout')" class="mt-4 w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 rounded-xl text-xs transition-colors">Iniciar Breakout 🎭</button>
+                </div>
+                <div class="game-card-v2 flex flex-col justify-between text-left">
+                    <div>
+                        <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-red-500/10 text-red-400 tracking-wider">Temática: Pokémon GO</span>
+                        <h3 class="text-lg font-bold text-white mt-2 mb-1">🎒 Safari de Orientación</h3>
+                        <p class="text-xs text-slate-400 leading-relaxed">Un Pokémon Legendario ha aparecido en el colegio. Aprende a orientarte en el espacio real interpretando mapas y rumbos básicos.</p>
+                    </div>
+                    <button onclick="initGame('pokemon')" class="mt-4 w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 rounded-xl text-xs transition-colors">Iniciar Breakout 🧭</button>
+                </div>
+            </div>
+
+            <!-- JUEGOS TERCER CICLO -->
+            <div id="panel-ciclo-3" class="ciclo-panel grid grid-cols-1 sm:grid-cols-2 gap-4 hidden">
+                <div class="game-card-v2 flex flex-col justify-between text-left">
+                    <div>
+                        <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-green-500/10 text-green-400 tracking-wider">Temática: Minecraft</span>
+                        <h3 class="text-lg font-bold text-white mt-2 mb-1">⛏️ Craftea tu Condición Física</h3>
+                        <p class="text-xs text-slate-400 leading-normal">Consigue materiales raros crafteando las capacidades físicas básicas: fuerza, resistencia cardiovascular, flexibilidad y velocidad metabólica.</p>
+                    </div>
+                    <button onclick="initGame('minecraft')" class="mt-4 w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 rounded-xl text-xs transition-colors">Iniciar Breakout ⚔️</button>
+                </div>
+                <div class="game-card-v2 flex flex-col justify-between text-left">
+                    <div>
+                        <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-sky-500/10 text-sky-400 tracking-wider">Temática: Kings League</span>
+                        <h3 class="text-lg font-bold text-white mt-2 mb-1">🏆 Olimpo Digital: Fair Play</h3>
+                        <p class="text-xs text-slate-400 leading-normal">Es la gran final. Activa las cartas secretas de inclusión y coeducación resolviendo estrategias en juegos modificados y deportes alternativos.</p>
+                    </div>
+                    <button onclick="initGame('kings')" class="mt-4 w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 rounded-xl text-xs transition-colors">Iniciar Breakout ⚽</button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="text-center text-slate-600 text-xs py-4 mt-8 border-t border-white/5 max-w-6xl mx-auto w-full">
+        &copy; 2026 S al Cubo (S³) - Sandra Quiles. Conectando Innovación Didáctica y Gamificación Real.
+    </footer>
+
+    <!-- MODAL DE VIDEOPRESENTACIÓN (SANDRA) -->
+    <div id="video-modal" class="custom-modal">
+        <div class="modal-content !p-0 !bg-transparent !border-0">
+            <button onclick="closeVideo()" class="absolute -top-10 right-0 text-white text-2xl opacity-80 hover:opacity-100 z-10"><i class="fa-solid fa-xmark"></i></button>
+            <div class="video-container">
+                <iframe id="yt-player" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- MOTOR INTERACTIVO MULTICAPA PARA LOS BREAKOUTS (SIN POPUPS NI ALERTS) -->
+    <div id="engine-modal" class="custom-modal">
+        <div class="modal-content text-left max-w-xl">
+            <button onclick="closeEngine()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-xl"><i class="fa-solid fa-xmark"></i></button>
+            
+            <!-- CAPA 1: INTRODUCCIÓN Y NARRATIVA INMERSIVA -->
+            <div id="step-narrative" class="engine-step active">
+                <div class="flex items-center gap-2 mb-2">
+                    <span id="badge-game" class="text-[10px] font-bold uppercase px-2 py-0.5 rounded"></span>
+                    <span class="text-xs font-semibold text-slate-400">Fase 1: Contexto Histórico</span>
+                </div>
+                <h3 id="title-game" class="text-2xl font-black text-white mb-3"></h3>
+                <p id="desc-game" class="text-sm text-slate-300 leading-relaxed mb-6 bg-white/5 p-4 rounded-xl border border-white/5"></p>
+                <button onclick="goStep('challenge')" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 rounded-xl text-sm transition-transform">Acceder al Enigma Curricular 🔒</button>
+            </div>
+
+            <!-- CAPA 2: RETO TEÓRICO CURRICULAR (OPCIONES CON VALIDACIÓN VISUAL) -->
+            <div id="step-challenge" class="engine-step">
+                <span class="text-xs font-semibold text-slate-400 mb-1 block">Fase 2: Desafío Teórico LOMLOE</span>
+                <h3 id="question-game" class="text-xl font-bold text-white mb-4"></h3>
+                
+                <div id="options-box" class="flex flex-col gap-2 mb-6">
+                    <!-- Las opciones se generan dinámicamente mediante JS -->
+                </div>
+
+                <div id="feedback-challenge" class="text-xs font-medium mb-4 hidden p-3 rounded-xl"></div>
+
+                <button onclick="validateChallenge()" class="w-full bg-sky-500 hover:bg-sky-600 text-white font-bold py-3 rounded-xl text-sm">Validar Respuesta Motriz</button>
+            </div>
+
+            <!-- CAPA 3: MISIÓN ACTIVA EN EL GIMNASIO (EJECUCIÓN MOTRIZ + CRONÓMETRO) -->
+            <div id="step-gimnasio" class="engine-step">
+                <span class="text-xs font-semibold text-amber-400 uppercase tracking-wider block mb-1">Fase 3: Transferencia Motriz en el Aula</span>
+                <h3 class="text-xl font-black text-white mb-2">¡Rompamos la pantalla! 🏃‍♀️💨</h3>
+                <p id="gym-desc" class="text-sm text-slate-300 leading-relaxed mb-6 bg-amber-500/5 p-4 rounded-xl border border-amber-500/10"></p>
+                
+                <div id="crono-display" class="text-center text-3xl font-black text-amber-400 bg-white/5 py-4 rounded-2xl mb-6 tracking-widest border border-white/5">
+                    ⏱️ Listo para la acción
+                </div>
+
+                <button id="btn-crono" onclick="startGymTimer()" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-xl text-sm">Comenzar Misión Física</button>
+            </div>
+
+            <!-- CAPA 4: PANTALLA DE VICTORIA Y JUSTIFICACIÓN PEDAGÓGICA -->
+            <div id="step-victory" class="engine-step text-center">
+                <div class="text-5xl mb-3">🏆🎉✨</div>
+                <h3 class="text-2xl font-black text-emerald-400 mb-2">¡CÓDIGO DESBLOQUEADO!</h3>
+                <p id="victory-code" class="text-lg font-mono font-bold text-white bg-white/5 py-2 px-4 rounded-xl inline-block mb-6 tracking-widest"></p>
+                
+                <div class="p-4 bg-emerald-500/5 border border-emerald-500/10 rounded-xl text-left">
+                    <span class="text-[10px] font-bold text-emerald-400 uppercase tracking-widest block mb-1">Justificación Didáctica para el Tribunal:</span>
+                    <p id="justification-text" class="text-xs text-slate-300 leading-relaxed"></p>
+                </div>
+                <button onclick="closeEngine()" class="mt-6 w-full bg-white/10 hover:bg-white/10 text-white font-semibold py-2 rounded-xl text-xs">Volver a la Ludoteca</button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- BASE DE DATOS DE LOS 6 JUEGOS TOTALMENTE INTERACTIVOS -->
+    <script>
+        const videoId = 'WgzakG_GYQ0';
+        
+        const DB_JUEGOS = {
+            bluey: {
+                badge: "1º Ciclo | Bluey", badgeClass: "bg-amber-500/10 text-amber-400",
+                title: "🐾 Misión: Salvar el Recreo",
+                desc: "¡Oh no! El villano 'Aburrimiento' ha guardado todos los balones en el cuarto de materiales y ha cerrado el candado molecular. ¡Ayuda a Bluey y Bingo a resolver los retos corporales para poder jugar!",
+                question: "¿Con qué parte del cuerpo podemos conducir de forma reglamentaria una pelota en nuestro juego de fútbol?",
+                options: [
+                    { text: "Con las manos y los brazos extendidos", correct: false, feedback: "¡Cuidado! Si tocamos el balón con las manos en fútbol es falta." },
+                    { text: "Con el pie (empeine o planta)", correct: true, feedback: "¡Perfecto! El pie nos da el control ideal del balón de forma reglamentaria." },
+                    { text: "Con las orejas", correct: false, feedback: "¡Qué divertido! Pero sería muy difícil correr así, intenta otra parte." }
+                ],
+                gym: "Levántate y realiza 10 saltos de tijera (Jumping Jacks) abriendo y cerrando brazos y piernas rítmicamente para calentar tu motor corporal.",
+                timer: 10,
+                code: "S3_C1_BLUEY",
+                justification: "Este breakout vincula directamente el Criterio de Evaluación 1.1 del Bloque de Saberes de Esquema Corporal, promoviendo el conocimiento y segmentación del propio cuerpo en el alumnado de primer ciclo."
+            },
+            mario: {
+                badge: "1º Ciclo | Super Mario", badgeClass: "bg-blue-500/10 text-blue-400",
+                title: "🍄 El Rescate del Champiñón",
+                desc: "Bowser ha cubierto el Reino Champiñón con obstáculos móviles. Toad se ha quedado atrapado al final de la pista de obstáculos del gimnasio.",
+                question: "Si un caparazón de Bowser viene rodando muy rápido por el aire a la altura de tu cabeza, ¿qué patrón motriz es el más adecuado?",
+                options: [
+                    { text: "Pegar un salto vertical muy alto", correct: false, feedback: "¡Uf! Si saltas te golpearías directamente con el caparazón volador." },
+                    { text: "Flexionar las rodillas y agacharse en el suelo", correct: true, feedback: "¡Excelente decisión! Modificar tu altura te salva del impacto." }
+                ],
+                gym: "Mantén la posición de sentadilla (squat) estática durante 12 segundos emulando estar agachado esquivando el caparazón.",
+                timer: 12,
+                code: "S3_C1_MARIO",
+                justification: "Fomenta el desarrollo de las Habilidades Motrices Básicas y los mecanismos de percepción-decisión ante estímulos externos (Bloque de Saberes A, 1º Ciclo)."
+            },
+            insideout: {
+                badge: "2º Ciclo | Inside Out", badgeClass: "bg-purple-500/10 text-purple-400",
+                title: "🧠 El Laberinto Emocional",
+                desc: "Las emociones de Riley se han descontrolado tras perder un partido en el patio. Alegría necesita restablecer el orden motriz y ético de la memoria a largo plazo.",
+                question: "Si tu equipo pierde el partido definitivo debido a un fallo involuntario de un compañero de clase, la respuesta del Fair Play es:",
+                options: [
+                    { text: "Gritarle, aislarle y culparle del resultado", correct: false, feedback: "Eso destruye la cohesión del grupo y viola los valores de la EF inclusiva." },
+                    { text: "Apoyarle, chocarle la mano y recordar que lo importante es el proceso y la diversión en equipo", correct: true, feedback: "¡Brillante! La empatía y el juego limpio definen a un verdadero deportista." }
+                ],
+                gym: "Realiza 3 respiraciones diafragmáticas profundas (tomando aire en 4s y soltando en 4s) para demostrar tu capacidad de autocontrol y relajación muscular.",
+                timer: 15,
+                code: "S3_C2_INSIDE",
+                justification: "Vinculado al Criterio de Evaluación 3.2 de la LOMLOE, centrado en la resolución de conflictos mediante el diálogo y la asunción de conductas respetuosas y de juego limpio en actividades sociomotrices."
+            },
+            pokemon: {
+                badge: "2º Ciclo | Pokémon GO", badgeClass: "bg-red-500/10 text-red-400",
+                title: "🎒 El Safari de la Orientación",
+                desc: "Un radar de la zona detecta la presencia de un Pokémon Legendario escondido en los límites del patio del colegio. ¡Debemos interpretar las coordenadas básicas!",
+                question: "Si estás situado en el centro del patio y el mapa te indica que el objetivo está en el punto Cardinal Norte, ¿hacia dónde debes orientar tu brújula?",
+                options: [
+                    { text: "Hacia la derecha, donde se pone el Sol", correct: false, feedback: "No, la puesta del sol marca la dirección del Oeste." },
+                    { text: "Hacia el frente absoluto de referencia que marca la aguja imantada", correct: true, feedback: "¡Correcto! El Norte marca el eje de referencia espacial principal en orientación." }
+                ],
+                gym: "Simula una carrera de orientación fija corriendo sin moverte del sitio (Skipping bajo) para simular la búsqueda rápida en el patio.",
+                timer: 15,
+                code: "S3_C2_POKEMON",
+                justification: "Desarrolla las actividades de orientación en el medio urbano/escolar, integrando la estructuración espacio-temporal del alumnado en el segundo ciclo de educación primaria."
+            },
+            minecraft: {
+                badge: "3º Ciclo | Minecraft", badgeClass: "bg-green-500/10 text-green-400",
+                title: "⛏️ Craftea tu Condición Física",
+                desc: "Para adentrarte en la fortaleza del Nether necesitas fabricar una armadura de diamante que solo se obtiene dominando los componentes de la condición física saludable.",
+                question: "¿Qué capacidad física básica nos permite sostener una actividad o esfuerzo de intensidad moderada durante un tiempo prolongado?",
+                options: [
+                    { text: "La Fuerza Explosiva", correct: false, feedback: "La fuerza explosiva sirve para gestos muy cortos y potentes, no prolongados." },
+                    { text: "La Resistencia Aeróbica / Cardiovascular", correct: true, feedback: "¡Exacto! El sistema cardiorrespiratorio optimiza el uso de oxígeno para retrasar la fatiga." },
+                    { text: "La Flexibilidad estática", correct: false, feedback: "La flexibilidad amplía el rango articular, no sostiene el esfuerzo en carrera." }
+                ],
+                gym: "Demuestra tu fuerza del tren inferior realizando saltos verticales continuos con rebote suave durante el tiempo marcado.",
+                timer: 15,
+                code: "S3_C3_MINECRAFT",
+                justification: "Aborda el conocimiento y autoevaluación de las Capacidades Físicas Básicas (Bloque de Saberes de Actividad Física y Salud), empoderando al alumnado del tercer ciclo en la gestión de su propia salud."
+            },
+            kings: {
+                badge: "3º Ciclo | Kings League", badgeClass: "bg-sky-500/10 text-sky-400",
+                title: "🏆 Olimpo Digital: Fair Play",
+                desc: "Es el partido del torneo final. El presidente de la liga saca la 'Carta Secreta DUA'. Las normas del deporte convencional deben modificarse para asegurar el éxito inclusivo de todo el grupo.",
+                question: "¿Cuál es el motivo pedagógico principal para modificar las estructuras y reglas de un deporte convencional en las clases de Educación Física?",
+                options: [
+                    { text: "Hacer el juego más complejo para que solo participen los alumnos más hábiles", correct: false, feedback: "Eso va en contra de la ley educativa y genera exclusión y frustración." },
+                    { text: "Garantizar la accesibilidad universal, la equidad y que todo el alumnado participe con éxito sin importar su nivel motriz", correct: true, feedback: "¡Perfecto! Cumple al 100% con los principios DUA y la inclusión curricular LOMLOE." }
+                ],
+                gym: "Realiza estiramientos dinámicos alternando zancadas (lunges) controladas para mantener la flexibilidad y preparación articular de las piernas.",
+                timer: 15,
+                code: "S3_C3_KINGS",
+                justification: "Muestra la aplicación real del Diseño Universal para el Aprendizaje (DUA) a través de los juegos modificados y el deporte escolar, elemento clave evaluado de forma muy positiva por los tribunales de oposición."
+            }
+        };
+
+        let activeGame = null;
+        let selectedOptionIdx = null;
+
+        function selectCicloTab(cicloNum) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`tab-${cicloNum}`).classList.add('active');
+            
+            document.querySelectorAll('.ciclo-panel').forEach(p => p.classList.add('hidden'));
+            document.getElementById(`panel-ciclo-${cicloNum}`).classList.remove('hidden');
+        }
+
+        function openVideo() {
+            const modal = document.getElementById('video-modal');
+            document.getElementById('yt-player').src = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&rel=0&controls=1`;
+            modal.style.display = 'flex';
+        }
+        function closeVideo() {
+            document.getElementById('video-modal').style.display = 'none';
+            document.getElementById('yt-player').src = '';
+        }
+
+        function initGame(key) {
+            activeGame = DB_JUEGOS[key];
+            selectedOptionIdx = null;
+            
+            // Configurar paso 1: Narrativa
+            const badge = document.getElementById('badge-game');
+            badge.innerText = activeGame.badge;
+            badge.className = `text-[10px] font-bold uppercase px-2 py-0.5 rounded ${activeGame.badgeClass}`;
+            
+            document.getElementById('title-game').innerText = activeGame.title;
+            document.getElementById('desc-game').innerText = activeGame.desc;
+            
+            // Configurar paso 2: Reto
+            document.getElementById('question-game').innerText = activeGame.question;
+            const optBox = document.getElementById('options-box');
+            optBox.innerHTML = '';
+            
+            activeGame.options.forEach((opt, idx) => {
+                const div = document.createElement('div');
+                div.className = "opt-box text-sm text-slate-200";
+                div.innerText = opt.text;
+                div.onclick = function() {
+                    document.querySelectorAll('.opt-box').forEach(el => el.classList.remove('selected'));
+                    div.classList.add('selected');
+                    selectedOptionIdx = idx;
+                };
+                optBox.appendChild(div);
+            });
+            
+            document.getElementById('feedback-challenge').classList.add('hidden');
+            
+            // Configurar paso 3: Gimnasio
+            document.getElementById('gym-desc').innerText = activeGame.gym;
+            document.getElementById('crono-display').innerText = "⏱️ Listo para la acción";
+            const btnCrono = document.getElementById('btn-crono');
+            btnCrono.disabled = false;
+            btnCrono.style.opacity = '1';
+            btnCrono.innerText = "Comenzar Misión Física";
+
+            // Mostrar modal e ir al paso 1
+            document.getElementById('engine-modal').style.display = 'flex';
+            goStep('narrative');
+        }
+
+        function goStep(stepId) {
+            document.querySelectorAll('.engine-step').forEach(s => s.classList.remove('active'));
+            document.getElementById(`step-${stepId}`).classList.add('active');
+        }
+
+        function validateChallenge() {
+            if (selectedOptionIdx === null) {
+                alert("Sandra, selecciona una opción antes de validar el enigma curricular.");
+                return;
+            }
+            
+            const opt = activeGame.options[selectedOptionIdx];
+            const feedBox = document.getElementById('feedback-challenge');
+            feedBox.innerText = opt.feedback;
+            feedBox.classList.remove('hidden');
+            
+            if (opt.correct) {
+                feedBox.className = "text-xs font-medium mb-4 p-3 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20";
+                setTimeout(() => { goStep('gimnasio'); }, 1500);
+            } else {
+                feedBox.className = "text-xs font-medium mb-4 p-3 rounded-xl bg-rose-500/10 text-rose-400 border border-rose-500/20";
+            }
+        }
+
+        function startGymTimer() {
+            let t = activeGame.timer;
+            const display = document.getElementById('crono-display');
+            const btn = document.getElementById('btn-crono');
+            btn.disabled = true;
+            btn.style.opacity = '0.5';
+            
+            const interval = setInterval(() => {
+                t--;
+                display.innerText = `🤸‍♂️ ¡Moviéndote! Quedan ${t}s`;
+                if (t <= 0) {
+                    clearInterval(interval);
+                    display.innerText = "✅ ¡Movimiento Validado!";
+                    
+                    // Configurar paso victoria
+                    document.getElementById('victory-code').innerText = `CLAVE: ${activeGame.code}`;
+                    document.getElementById('justification-text').innerText = activeGame.justification;
+                    
+                    setTimeout(() => { goStep('victory'); }, 1000);
+                }
+            }, 1000);
+        }
+
+        function closeEngine() {
+            document.getElementById('engine-modal').style.display = 'none';
+        }
+
+        window.onclick = function(e) {
+            if (e.target.classList.contains('custom-modal')) {
+                closeVideo(); closeEngine();
+            }
+        }
+    </script>
+</body>
+</html>
