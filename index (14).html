@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S³ | Sandra Quiles - Educación Física</title>
+    
+    <!-- Tipografías temáticas inmersivas para dar el salto de calidad visual -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Varela+Round&family=Silkscreen&family=Fredoka:wght@300;700&family=VT323&family=Montserrat:wght@400;900&family=Rajdhani:wght@500;700&family=Inter:wght@300;400;800&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* --- ESTILOS BASE Y NAVEGACIÓN --- */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #05070a;
+            color: #f0f6fc;
+            margin: 0; padding: 0; overflow-x: hidden;
+            background-image: radial-gradient(circle at 50% 50%, #ffffff08 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 30px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .glass:hover { 
+            transform: translateY(-8px); 
+            border-color: rgba(255, 255, 255, 0.3); 
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        /* --- MOTOR DE TEMAS DINÁMICOS PARA CADA BREAKOUT --- */
+        .game-modal {
+            display: none; position: fixed; inset: 0; z-index: 200;
+            background-size: cover; background-position: center;
+        }
+
+        /* Capas de color degradado y texturas visuales evocadoras */
+        .theme-bluey { 
+            background-image: linear-gradient(rgba(14, 116, 144, 0.85), rgba(255, 255, 255, 0.9)), url('https://images.unsplash.com/photo-1601004890684-d8cbf643f5f2?q=80&w=1000&auto=format&fit=crop'); 
+            font-family: 'Varela Round', sans-serif; 
+        }
+        .theme-mario { 
+            background-image: linear-gradient(rgba(224, 36, 36, 0.9), rgba(30, 64, 175, 0.9)), url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=1000&auto=format&fit=crop'); 
+            font-family: 'Silkscreen', cursive; 
+        }
+        .theme-insideout { 
+            background-image: linear-gradient(rgba(107, 33, 168, 0.85), rgba(234, 179, 8, 0.85)), url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1000&auto=format&fit=crop'); 
+            font-family: 'Fredoka', sans-serif; 
+        }
+        .theme-pokemon { 
+            background-image: linear-gradient(rgba(21, 128, 61, 0.85), rgba(29, 78, 216, 0.85)), url('https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1000&auto=format&fit=crop'); 
+            font-family: 'Montserrat', sans-serif; 
+        }
+        .theme-minecraft { 
+            background-image: linear-gradient(rgba(22, 101, 52, 0.9), rgba(30, 41, 59, 0.9)), url('https://images.unsplash.com/photo-1607988795691-3d0147b43231?q=80&w=1000&auto=format&fit=crop'); 
+            font-family: 'VT323', monospace; 
+        }
+        .theme-kings { 
+            background-image: linear-gradient(rgba(15, 23, 42, 0.95), rgba(2, 132, 199, 0.85)), url('https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=1000&auto=format&fit=crop'); 
+            font-family: 'Rajdhani', sans-serif; 
+        }
+
+        .game-overlay { background: rgba(4, 6, 10, 0.6); backdrop-filter: blur(8px); height: 100%; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .game-box { background: #ffffff; color: #1e293b; max-width: 620px; width: 100%; padding: 36px; border-radius: 40px; box-shadow: 0 40px 80px rgba(0,0,0,0.6); position: relative; border: 1px solid rgba(255,255,255,0.2); }
+
+        /* Transiciones de Pasos */
+        .view-step { display: none; }
+        .view-step.active { display: block; animation: smoothPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        @keyframes smoothPop { from { transform: scale(0.94); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        /* Animación Identitaria de la Margarita de Sandra */
+        .margarita-spin { animation: spin 25s linear infinite; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        
+        /* Botones de respuesta adaptativos */
+        .opt-btn {
+            background: #f8fafc; border: 2px solid #e2e8f0; color: #334155;
+            padding: 16px; border-radius: 20px; width: 100%; text-align: left;
+            font-weight: 700; transition: all 0.2s ease;
+        }
+        .opt-btn:hover { background: #f1f5f9; border-color: #cbd5e1; transform: translateX(4px); }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <!-- PANTALLA PRINCIPAL: LAS TRES ESES (S³) -->
+    <div id="home-view" class="max-w-6xl mx-auto min-h-screen flex flex-col justify-center px-6 py-12">
+        <header class="text-center mb-16">
+            <h1 class="text-8xl md:text-9xl font-black tracking-tighter text-white">S<span class="text-emerald-400">³</span></h1>
+            <p class="text-slate-400 text-xs md:text-sm uppercase tracking-[0.6em] font-light mt-2">Sandra Quiles • Innovación en Educación Física</p>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- S1: LA SEÑO -->
+            <div onclick="openSeño()" class="glass p-10 text-center cursor-pointer border-emerald-500/20 group">
+                <div class="w-20 h-20 bg-emerald-500/10 rounded-3xl flex items-center justify-center text-emerald-400 text-4xl mx-auto mb-8 shadow-[0_0_40px_rgba(16,185,129,0.15)]">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+                <h2 class="text-3xl font-bold mb-3 text-white">La Seño</h2>
+                <p class="text-slate-400 text-xs leading-relaxed mb-6">Gamificación inclusiva y ludoteca digital interactiva organizada por ciclos.</p>
+                <span class="text-emerald-400 text-[10px] font-bold uppercase tracking-widest border-b border-emerald-400/30 pb-1 group-hover:border-emerald-400">Abrir Ludoteca</span>
+            </div>
+
+            <!-- S2: SANDRA -->
+            <div onclick="openSandra()" class="glass p-10 text-center cursor-pointer border-sky-500/20 group">
+                <div class="w-20 h-20 mx-auto mb-8 relative flex items-center justify-center bg-sky-500/10 rounded-3xl shadow-[0_0_40px_rgba(56,189,248,0.15)]">
+                    <i class="fa-solid fa-asterisk text-4xl text-sky-400 margarita-spin"></i>
+                </div>
+                <h2 class="text-3xl font-bold mb-3 text-white">Sandra</h2>
+                <p class="text-slate-400 text-xs leading-relaxed mb-6">Videopresentación de mi perfil profesional y canales directos de contacto.</p>
+                <span class="text-sky-400 text-[10px] font-bold uppercase tracking-widest border-b border-sky-400/30 pb-1 group-hover:border-sky-400">Ver Presentación</span>
+            </div>
+
+            <!-- S3: EL SENSEI -->
+            <div class="glass p-10 text-center border-purple-500/10 opacity-40 grayscale pointer-events-none">
+                <div class="w-20 h-20 bg-purple-500/5 rounded-3xl flex items-center justify-center text-purple-500/50 text-4xl mx-auto mb-8">
+                    <i class="fa-solid fa-hand-fist"></i>
+                </div>
+                <h2 class="text-3xl font-bold mb-3 text-slate-500">El Sensei</h2>
+                <p class="text-slate-600 text-xs leading-relaxed mb-6">Disciplina, valores marciales del Kenpo y gestión del autocontrol motriz.</p>
+                <span class="text-purple-500/50 text-[10px] font-bold uppercase tracking-widest">Próxima Dimensión</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN DE LA SEÑO: SELECCIÓN DE CICLOS Y BANCO DE JUEGOS -->
+    <div id="seño-view" class="hidden fixed inset-0 z-50 bg-[#07090e] overflow-y-auto p-6 flex flex-col items-center">
+        <div class="w-full max-w-5xl my-auto">
+            <button onclick="closeSeño()" class="text-white/40 hover:text-white mb-8 transition-colors flex items-center gap-2 text-sm"><i class="fa-solid fa-arrow-left"></i> Volver a Dimensiones</button>
+            <h2 class="text-5xl font-black mb-2 text-white">Ludoteca <span class="text-emerald-400">Digital</span></h2>
+            <p class="text-slate-400 text-xs uppercase tracking-wider mb-10">Selecciona un ciclo formativo para desplegar los breakouts gamificados</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
+                <button onclick="filterCycle(1)" id="btn-tab-1" class="glass p-6 text-base font-bold border-white/5 hover:bg-emerald-500/20 transition-all text-center">1er Ciclo (1º y 2º Primaria)</button>
+                <button onclick="filterCycle(2)" id="btn-tab-2" class="glass p-6 text-base font-bold border-white/5 hover:bg-emerald-500/20 transition-all text-center">2º Ciclo (3º y 4º Primaria)</button>
+                <button onclick="filterCycle(3)" id="btn-tab-3" class="glass p-6 text-base font-bold border-white/5 hover:bg-emerald-500/20 transition-all text-center">3er Ciclo (5º y 6º Primaria)</button>
+            </div>
+
+            <!-- CONTENEDOR DE TARJETAS DE CADA CICLO -->
+            <div id="games-container" class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6 w-full hidden">
+                <!-- Se rellena de manera interactiva por JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- MOTOR CENTRAL DE BREAKOUTS GAMIFICADOS (ESTILO CONSOLA) -->
+    <div id="game-engine" class="game-modal">
+        <div class="game-overlay">
+            <div id="game-box" class="game-box">
+                <button onclick="closeGame()" class="absolute top-6 right-8 text-slate-400 hover:text-slate-600 transition-colors"><i class="fa-solid fa-xmark text-2xl"></i></button>
+                
+                <!-- PASO 1: INTRODUCCIÓN CON VÍDEO MOTIVACIONAL -->
+                <div id="step-intro" class="view-step active">
+                    <div class="rounded-3xl overflow-hidden aspect-video bg-black mb-6 border-4 border-slate-100 shadow-inner">
+                        <iframe id="game-trailer" class="w-full h-full" src="" frameborder="0" allow="autoplay"></iframe>
+                    </div>
+                    <h3 id="game-title" class="text-3xl font-black mb-2 text-slate-800"></h3>
+                    <p id="game-desc" class="text-slate-500 text-xs md:text-sm leading-relaxed mb-6 px-2"></p>
+                    <button onclick="goStep('quiz')" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold uppercase tracking-widest hover:bg-slate-800 transition-all shadow-lg text-xs md:text-sm">Aceptar Desafío Teórico 🔓</button>
+                </div>
+
+                <!-- PASO 2: DESAFÍO PEDAGÓGICO CURRICULAR (OPCIONES CANVA-STYLE) -->
+                <div id="step-quiz" class="view-step">
+                    <span class="text-[10px] font-bold text-emerald-600 uppercase tracking-widest block mb-2 text-center">Fase 1 — Enigma Curricular</span>
+                    <h4 id="game-question" class="text-xl md:text-2xl font-black text-slate-800 mb-6 text-center leading-snug"></h4>
+                    <div id="game-options" class="grid grid-cols-1 gap-3">
+                        <!-- Botones inyectados dinámicamente -->
+                    </div>
+                </div>
+
+                <!-- PASO 3: TRASPASO AL GIMNASIO (ACCIÓN MOTRIZ REAL CON CRONÓMETRO) -->
+                <div id="step-gym" class="view-step text-center">
+                    <div class="w-20 h-20 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center text-3xl mx-auto mb-4 animate-pulse">
+                        <i class="fa-solid fa-person-running"></i>
+                    </div>
+                    <h4 class="text-2xl font-black text-slate-800 mb-2">Fase 2 — ¡A Moverse!</h4>
+                    <p id="game-gym" class="text-slate-500 text-sm mb-6 max-w-md mx-auto font-medium"></p>
+                    <div id="game-timer" class="text-6xl font-black text-emerald-500 mb-4 tracking-tight">10</div>
+                    <span class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Completa la acción antes de que expire el tiempo</span>
+                </div>
+
+                <!-- PASO 4: PANTALLA DE RECOMPENSA Y CLAVE TEMÁTICA -->
+                <div id="step-victory" class="view-step text-center">
+                    <div class="text-6xl mb-4">🏆</div>
+                    <h4 class="text-3xl font-black text-emerald-600 mb-1">¡Código Desbloqueado!</h4>
+                    <p class="text-slate-400 text-xs mb-6">Enigma superado con éxito. Has salvado la sesión de Educación Física.</p>
+                    <div class="bg-slate-100 p-6 rounded-3xl border border-slate-200">
+                        <span class="text-[10px] uppercase font-bold text-slate-400 tracking-widest block mb-2">Código Secreto del Ciclo:</span>
+                        <span id="game-key" class="text-4xl font-black tracking-widest text-slate-900 block"></span>
+                    </div>
+                    <button onclick="closeGame()" class="text-slate-400 hover:text-slate-600 font-bold text-[10px] uppercase tracking-widest mt-6 block mx-auto">Regresar al Panel Principal</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CAPA INTEGRADA VÍDEO VERTICAL SANDRA -->
+    <div id="modal-sandra" class="hidden fixed inset-0 z-[150] bg-black/95 flex items-center justify-center p-4">
+        <div class="max-w-xs w-full relative">
+            <button onclick="closeSandra()" class="absolute -top-10 right-0 text-white/70 hover:text-white text-2xl"><i class="fa-solid fa-xmark"></i></button>
+            <div class="rounded-[32px] overflow-hidden border-2 border-white/10 aspect-[9/16] bg-black shadow-2xl">
+                <iframe id="video-sandra" class="w-full h-full" src="" frameborder="0" allow="autoplay; encrypted-media"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOGICA E INTELIGENCIA DEL SISTEMA DE JUEGOS (BASE DE DATOS COMPLETA) -->
+    <script>
+        const DB = {
+            1: [
+                { id: 'bluey', theme: 'bluey', icon: 'fa-paw', title: 'Bluey: El Recreo Mágico', video: 'WvUonh3yM0M', desc: 'El malvado Aburrimiento ha cerrado el almacén de balones. ¡Identifica las partes de tu esquema corporal junto a Bluey y Bingo para abrir el candado!', question: '¿Qué apoyos corporales tocamos obligatoriamente en el suelo para realizar la postura del puente de forma segura?', options: ['Únicamente la punta de la nariz', 'Las plantas de los pies y las palmas de las manos', 'Las dos orejas al mismo tiempo'], correct: 1, gym: '¡Levántate del sitio! Haz 5 saltos de rana potentes extendiendo los brazos hacia el cielo.', key: 'PATA_BLUEY_EF' },
+                { id: 'mario', theme: 'mario', icon: 'fa-gamepad', title: 'Mario: Agilidad en el Reino Píxel', video: 'rV6mG398BTM', desc: '¡Bowser ha colocado muros y trampas invisibles en el gimnasio del colegio! Usa tus habilidades motrices básicas para superarlo.', question: 'Si Mario quiere saltar sobre un obstáculo muy alto, ¿qué articulaciones de las piernas debe flexionar obligatoriamente para impulsarse?', options: ['Los codos y las muñecas', 'Las rodillas y los tobillos', 'Las cejas y los hombros'], correct: 1, gym: '¡Activa tus piernas! Realiza carrera rápida sin moverte del sitio (skipping alto) durante los 10 segundos.', key: 'COIN_AGILITY_S3' }
+            ],
+            2: [
+                { id: 'inside', theme: 'insideout', icon: 'fa-brain', title: 'Del Revés: El Laberinto de la Alegría', video: 'vU5hYVf0qIs', desc: 'Las emociones de Riley se han desordenado tras perder un punto en un juego cooperativo. Ayuda a Alegría a restablecer el Fair Play.', question: 'Si un compañero de tu mismo equipo comete un fallo involuntario que os hace perder el juego, ¿cuál es la actitud correcta?', options: ['Ignorarle y no volver a pasarle la pelota', 'Correr hacia él, chocarle la mano y animarle a seguir intentándolo', 'Sentarse en el suelo y protestar a la seño'], correct: 1, gym: '¡Momento de autocontrol! Cierra los ojos y realiza 3 respiraciones profundas manteniendo el aire 3 segundos antes de soltarlo.', key: 'JOY_FAIRPLAY' },
+                { id: 'poke', theme: 'pokemon', icon: 'fa-compass', title: 'Pokémon: El Safari del Rumbo Norte', video: 'hHn1F8_2vXo', desc: 'Un Snorlax gigante se ha quedado dormido bloqueando la puerta de la pista exterior. Aprende a orientarte en el espacio real escolar.', question: '¿Qué instrumento de orientación utiliza una aguja imantada para señalar de forma constante el Norte magnético de la Tierra?', options: ['El cronómetro digital de la seño', 'La brújula de aventura', 'Una cinta métrica de saltos'], correct: 1, gym: '¡Orientación espacial! Da un giro completo sobre ti mismo hacia la derecha y luego otro hacia la izquierda con los brazos abiertos.', key: 'MAP_POKEMASTER' }
+            ],
+            3: [
+                { id: 'minecraft', theme: 'minecraft', icon: 'fa-cube', title: 'Minecraft: Fit-Craft 4K', video: 'tP8R78-r1V8', desc: 'Craftea las herramientas fundamentales de la condición física saludable para derrotar al Ender Dragon en el gimnasio.', question: '¿Cómo llamamos a la capacidad física básica que permite a nuestro corazón y pulmones aguantar un esfuerzo físico prolongado?', options: ['Fuerza máxima muscular', 'Resistencia aeróbica / cardiovascular', 'Velocidad de reacción pura'], correct: 1, gym: '¡Craftea energía! Realiza 10 sentadillas profundas controlando que tu espalda se mantenga recta al bajar.', key: 'DIAMOND_FIT_S3' },
+                { id: 'kings', theme: 'kings', icon: 'fa-soccer-ball', title: 'Kings League: Inclusión MVP', video: '6vYV807665M', desc: 'Es el partido definitivo. Para activar la carta secreta del presidente debes aplicar los principios del Diseño Universal (DUA).', question: '¿Cuál es el objetivo principal al modificar las reglas de un deporte tradicional en nuestras clases de Educación Física?', options: ['Hacer el juego exclusivo para premiar únicamente a los que ganan', 'Garantizar que todo el alumnado participe de forma activa y con éxito sin importar su nivel motriz', 'Aumentar la dificultad técnica para terminar antes la clase'], correct: 1, gym: '¡Trabajo de equipo! Choca las manos en el aire con tu equipo virtual y haz 4 fondos de brazos (flexiones) en el suelo.', key: 'MVP_DUA_WINNER' }
+            ]
+        };
+
+        let currentActiveGame = null;
+
+        function openSeño() { document.getElementById('seño-view').classList.remove('hidden'); filterCycle(1); }
+        function closeSeño() { document.getElementById('seño-view').classList.add('hidden'); }
+        
+        function openSandra() { 
+            document.getElementById('modal-sandra').classList.remove('hidden'); 
+            document.getElementById('video-sandra').src = "https://www.youtube.com/embed/WgzakG_GYQ0?autoplay=1&mute=1&controls=1&modestbranding=1"; 
+        }
+        function closeSandra() { 
+            document.getElementById('modal-sandra').classList.add('hidden'); 
+            document.getElementById('video-sandra').src = ""; 
+        }
+
+        function filterCycle(num) {
+            // Estilos estéticos activos para las pestañas
+            [1, 2, 3].forEach(n => {
+                const btn = document.getElementById(`btn-tab-${n}`);
+                if (n === num) {
+                    btn.className = "glass p-6 text-base font-bold border-emerald-500 bg-emerald-500/20 text-emerald-400 text-center";
+                } else {
+                    btn.className = "glass p-6 text-base font-bold border-white/5 hover:bg-emerald-500/10 text-center text-white";
+                }
+            });
+
+            const container = document.getElementById('games-container');
+            container.classList.remove('hidden');
+            
+            // Inyección limpia y estructurada de los breakouts correspondientes
+            container.innerHTML = DB[num].map(game => `
+                <div class="glass p-8 flex flex-col justify-between text-left hover:border-emerald-500/50">
+                    <div>
+                        <div class="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center text-emerald-400 text-xl mb-4 border border-white/10">
+                            <i class="fa-solid ${game.icon}"></i>
+                        </div>
+                        <h4 class="text-2xl font-bold text-white mb-2 tracking-tight">${game.title}</h4>
+                        <p class="text-slate-400 text-xs leading-relaxed mb-6">${game.desc}</p>
+                    </div>
+                    <button onclick="launchGame(${num}, '${game.id}')" class="w-full bg-emerald-500 hover:bg-emerald-600 py-4 rounded-xl font-bold text-white text-xs uppercase tracking-widest transition-all">Iniciar Breakout 🚀</button>
+                </div>
+            `).join('');
+        }
+
+        function launchGame(cycle, id) {
+            currentActiveGame = DB[cycle].find(g => g.id === id);
+            const engine = document.getElementById('game-engine');
+            
+            // Carga de la capa temática y tipográfica específica del juego seleccionado
+            engine.className = `game-modal theme-${currentActiveGame.theme}`;
+            engine.style.display = 'block';
+            
+            document.getElementById('game-title').innerText = currentActiveGame.title;
+            document.getElementById('game-desc').innerText = currentActiveGame.desc;
+            document.getElementById('game-trailer').src = `https://www.youtube.com/embed/${currentActiveGame.video}?autoplay=1&mute=1&controls=0&playlist=${currentActiveGame.video}&loop=1`;
+            
+            goStep('intro');
+        }
+
+        function goStep(step) {
+            document.querySelectorAll('.view-step').forEach(s => s.classList.remove('active'));
+            document.getElementById(`step-${step}`).classList.add('active');
+            
+            if(step === 'quiz') renderQuiz();
+            if(step === 'gym') startTimer();
+            if(step === 'victory') document.getElementById('game-key').innerText = currentActiveGame.key;
+        }
+
+        function renderQuiz() {
+            document.getElementById('game-question').innerText = currentActiveGame.question;
+            const container = document.getElementById('game-options');
+            
+            container.innerHTML = currentActiveGame.options.map((opt, i) => `
+                <button onclick="checkAnswer(${i})" class="opt-btn">${opt}</button>
+            `).join('');
+        }
+
+        function checkAnswer(idx) {
+            if(idx === currentActiveGame.correct) {
+                goStep('gym');
+            } else {
+                alert("❌ ¡Respuesta incorrecta! Las fuerzas del Aburrimiento te han despistado. ¡Analiza bien la pregunta LOMLOE e inténtalo de nuevo!");
+            }
+        }
+
+        function startTimer() {
+            let t = 10;
+            document.getElementById('game-gym').innerText = currentActiveGame.gym;
+            const display = document.getElementById('game-timer');
+            display.innerText = t;
+            
+            const interval = setInterval(() => {
+                t--;
+                display.innerText = t;
+                if(t <= 0) {
+                    clearInterval(interval);
+                    goStep('victory');
+                }
+            }, 1000);
+        }
+
+        function closeGame() {
+            document.getElementById('game-engine').style.display = 'none';
+            document.getElementById('game-trailer').src = "";
+        }
+    </script>
+</body>
+</html>
